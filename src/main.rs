@@ -4,11 +4,12 @@ use std::time::Instant;
 
 mod day01;
 mod day02;
+mod day03;
 
 type Solution = fn(String) -> ();
 
 fn main() {
-    let solutions: Vec<Solution> = vec![day01::day01, day02::day02];
+    let solutions: Vec<Solution> = vec![day01::day01, day02::day02, day03::day03];
 
     let args: Vec<String> = env::args().collect();
     let mut args_used = 1;
