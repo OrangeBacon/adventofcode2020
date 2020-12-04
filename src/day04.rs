@@ -9,64 +9,33 @@ pub fn day04(input: String) {
 
     println!("{:?}", res.len());
 
-    let height = Regex::new(r"(\d+)(cm|in)").unwrap();
+    let birth = Regex::new(r"19[2-9][0-9]|200[0-2]").unwrap();
+    let issue = Regex::new(r"201[0-9]|2020").unwrap();
+    let expire = Regex::new(r"202[0-9]|2030").unwrap();
+    let height = Regex::new(r"^(?:1[5-8][0-9]cm|19[0-3]cm|59in|6[0-9]in|7[0-6]in)$").unwrap();
     let hair = Regex::new(r"#[0-9a-f]{6}").unwrap();
     let eye = Regex::new(r"amb|blu|brn|gry|grn|hzl|oth").unwrap();
     let pid = Regex::new(r"^[0-9]{9}$").unwrap();
+    let cid = Regex::new("").unwrap();
 
     let mut valid = 0;
     for pass in res {
         let mut passed = true;
         for sec in pass {
-            let suc = match sec[0] {
-                "byr" => {
-                    let num = sec[1].parse::<i32>();
-                    if let Ok(n) = num {
-                        n >= 1920 && n <= 2002
-                    } else {
-                        false
-                    }
-                }
-                "iyr" => {
-                    let num = sec[1].parse::<i32>();
-                    if let Ok(n) = num {
-                        n >= 2010 && n <= 2020
-                    } else {
-                        false
-                    }
-                }
-                "eyr" => {
-                    let num = sec[1].parse::<i32>();
-                    if let Ok(n) = num {
-                        n >= 2020 && n <= 2030
-                    } else {
-                        false
-                    }
-                }
-                "hgt" => {
-                    let test = height.captures(sec[1]);
-                    if let Some(cap) = test {
-                        let num = cap.get(1).unwrap().as_str().parse::<i32>();
-                        if let Ok(n) = num {
-                            if cap.get(2).unwrap().as_str() == "cm" {
-                                n >= 150 && n <= 193
-                            } else {
-                                n >= 59 && n <= 76
-                            }
-                        } else {
-                            false
-                        }
-                    } else {
-                        false
-                    }
-                }
-                "hcl" => hair.is_match(sec[1]),
-                "ecl" => eye.is_match(sec[1]),
-                "pid" => pid.is_match(sec[1]),
-                "cid" => true,
+            if !match sec[0] {
+                "byr" => &birth,
+                "iyr" => &issue,
+                "eyr" => &expire,
+                "hgt" => &height,
+                "hcl" => &hair,
+                "ecl" => &eye,
+                "pid" => &pid,
+                "cid" => &cid,
                 _ => panic!()
-            };
-            if !suc {passed = false; break;}
+            }.is_match(sec[1]) {
+                passed = false;
+                break;
+            }
         }
         if passed {valid += 1;}
     }
