@@ -16,7 +16,6 @@ pub fn day04(input: String) {
 
     let mut valid = 0;
     for pass in res {
-        println!("{:?}", pass);
         let mut passed = true;
         for sec in pass {
             let suc = match sec[0] {
