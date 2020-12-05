@@ -12,4 +12,4 @@ console.log(
         hcl:/#[0-9a-f]{6}/,
         ecl:/amb|blu|brn|gry|grn|hzl|oth/,
         pid:/^[0-9]{9}$/,
-        cid:/.*/})[k].test(v)).reduce((a,b)=>a&b)],[0,0]));
+        cid:/.*/})[k]?.test(v)?1:0).reduce((a,b)=>a&b)],[0,0]));
