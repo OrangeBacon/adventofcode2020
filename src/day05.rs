@@ -44,7 +44,7 @@ pub fn day05(input: String) {
         }
     }
 
-    //day05v2(input);
+    day05v2(input);
 }
 
 use std::collections::HashSet;
