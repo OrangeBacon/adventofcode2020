@@ -1,32 +1,21 @@
-use std::collections::HashSet;
+use hashbrown::HashSet;
 use std::iter::FromIterator;
 
 pub fn day06(input: String) {
-    let chars : Vec<Vec<_>> = input.split("\n\n").map(|x|x.chars().filter(|&x|x!='\n').collect()).collect();
+    let chars = input.split("\n\n").map(|x|x.chars().filter(|&x|x!='\n'));
 
-    let res = chars.iter().fold(0, |acc, group| {
-        let mut set = HashSet::new();
-        for item in group.iter() {set.insert(*item);}
-        set.len() + acc
-    });
+    let res = chars.fold(0, |acc, group| HashSet::<char>::from_iter(group).len() + acc);
 
     println!("{}", res);
 
-    let chars : Vec<Vec<Vec<_>>> = input.split("\n\n").map(|x|x.lines().map(|x|x.chars().collect()).collect()).collect();
+    let chars = input.split("\n\n").map(|x|x.lines().map(|x|x.chars().collect()).collect::<Vec<Vec<_>>>());
 
-    let res = chars.iter().fold(0, |acc, group| {
-        let res : HashSet<char> = group.iter().fold(HashSet::from_iter(vec!['\n']), |a, person| {
-            let mut set = HashSet::new();
-            for item in person.iter() {set.insert(*item);}
-            let r = if a == HashSet::from_iter(vec!['\n']) {
-                set
-            } else {
-                a.intersection(&set).copied().collect()
-            };
-            r
-        });
-        res.len() + acc
-    });
+    let res = chars.fold(0, |acc, group|
+        group.iter().map(|x| HashSet::from_iter(x.iter().map(|x|*x)))
+        .fold(HashSet::from_iter(group[0].iter().map(|x|*x)), |a, person:HashSet<char>|
+                a.intersection(&person).copied().collect())
+        .len() + acc
+    );
 
     println!("{}", res);
 }
