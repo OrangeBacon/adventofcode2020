@@ -1,3 +1,5 @@
+#![feature(str_split_once)]
+
 use std::env;
 use std::fs;
 use std::time::Instant;
@@ -8,6 +10,7 @@ mod day03;
 mod day04;
 mod day05;
 mod day06;
+mod day07;
 
 type Solution = fn(String) -> ();
 
@@ -55,6 +58,7 @@ fn main() {
         day04::day04,
         day05::day05,
         day06::day06,
+        day07::day07,
     ];
 
     let args: Vec<String> = env::args().collect();
