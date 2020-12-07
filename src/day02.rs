@@ -19,9 +19,9 @@ pub fn day02(input: String) {
             count_1 += 1;
         }
 
-        let min_c = password.chars().nth(min-1).unwrap();
-        let max_c = password.chars().nth(max-1).unwrap();
-        if  (min_c == c && max_c != c) || (min_c != c && max_c == c) {
+        let min_c = password.chars().nth(min - 1).unwrap();
+        let max_c = password.chars().nth(max - 1).unwrap();
+        if (min_c == c && max_c != c) || (min_c != c && max_c == c) {
             count_2 += 1;
         }
     }

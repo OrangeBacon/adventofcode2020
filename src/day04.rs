@@ -1,10 +1,18 @@
 use regex::Regex;
 
 pub fn day04(input: String) {
-    let datas : Vec<Vec<Vec<_>>> = input.split("\n\n").map(|x| x.split_whitespace().map(|y|y.split(':').collect()).collect()).collect();
+    let datas: Vec<Vec<Vec<_>>> = input
+        .split("\n\n")
+        .map(|x| {
+            x.split_whitespace()
+                .map(|y| y.split(':').collect())
+                .collect()
+        })
+        .collect();
 
-    let res : Vec<_> = datas.iter()
-        .filter(|x| x.len() == 8 || (x.len() == 7 && x.iter().find(|y| y[0]=="cid").is_none()))
+    let res: Vec<_> = datas
+        .iter()
+        .filter(|x| x.len() == 8 || (x.len() == 7 && x.iter().find(|y| y[0] == "cid").is_none()))
         .collect();
 
     println!("{:?}", res.len());
@@ -31,13 +39,17 @@ pub fn day04(input: String) {
                 "ecl" => &eye,
                 "pid" => &pid,
                 "cid" => &cid,
-                _ => panic!()
-            }.is_match(sec[1]) {
+                _ => panic!(),
+            }
+            .is_match(sec[1])
+            {
                 passed = false;
                 break;
             }
         }
-        if passed {valid += 1;}
+        if passed {
+            valid += 1;
+        }
     }
 
     println!("{}", valid);
