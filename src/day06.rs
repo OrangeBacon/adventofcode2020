@@ -12,8 +12,7 @@ pub fn day06(input: String) {
 
     let res = chars.fold(0, |acc, group|
         group.iter().map(|x| HashSet::from_iter(x.iter().map(|x|*x)))
-        .fold(HashSet::from_iter(group[0].iter().map(|x|*x)), |a, person:HashSet<char>|
-                a.intersection(&person).copied().collect())
+        .fold(HashSet::from_iter(group[0].iter().map(|x|*x)), |a, person:HashSet<char>| &a & &person)
         .len() + acc
     );
 
