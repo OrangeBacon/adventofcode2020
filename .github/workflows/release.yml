@@ -35,7 +35,7 @@ jobs:
         use-cross: true
         command: test
         args: --target x86_64-pc-windows-gnu --release
-    - run: ls -la /home/runner/work/adventofcode2020/adventofcode2020
+    - run: ls -la /home/runner/work/adventofcode2020/adventofcode2020/target/release
 
     - name: Create Release
       id: create_release
