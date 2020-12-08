@@ -9,6 +9,8 @@ struct Bag {
     contains: Vec<(u32, Rc<RefCell<Bag>>)>,
 }
 
+const TARGET: &str = "shiny gold";
+
 pub fn day07(input: String) {
     let mut bags: HashMap<String, Rc<RefCell<Bag>>> = HashMap::new();
 
@@ -27,12 +29,12 @@ pub fn day07(input: String) {
             .collect();
         let contains = contains
             .iter()
-            .map(|x| x.splitn(2, " ").collect::<Vec<_>>())
-            .map(|x| {
-                if x[0] == "no" {
+            .map(|x| x.split_once(" ").unwrap())
+            .map(|(a,b)| {
+                if a == "no" {
                     None
                 } else {
-                    Some((x[0].parse::<u32>().unwrap(), x[1]))
+                    Some((a.parse::<u32>().unwrap(), b))
                 }
             })
             .filter(|&x| x != None)
@@ -72,8 +74,8 @@ pub fn day07(input: String) {
 
     fn find_recurse(bag: Rc<RefCell<Bag>>) -> bool {
         bag.borrow().contains.iter().fold(false, |acc, val| {
-            acc | (val.1.borrow().name == "shiny gold")
-                | (find_recurse(Rc::new(RefCell::new(val.1.borrow().clone()))))
+            acc || (val.1.borrow().name == TARGET)
+                || (find_recurse(Rc::new(RefCell::new(val.1.borrow().clone()))))
         })
     }
 
@@ -94,7 +96,7 @@ pub fn day07(input: String) {
     }
 
     let res = Rc::new(RefCell::new(
-        bags.get("shiny gold").unwrap().borrow().clone(),
+        bags.get(TARGET).unwrap().borrow().clone(),
     ));
 
     println!("{}", count_recurse(res) - 1);
