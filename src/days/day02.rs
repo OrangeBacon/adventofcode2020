@@ -1,11 +1,17 @@
-use regex::Regex;
-use anyhow::Result;
 use crate::AocResult;
+use anyhow::Result;
+use regex::Regex;
+use std::time::Instant;
 
 pub fn day02(input: String) -> Result<AocResult> {
-    let lines = input.lines();
+    let parse = Instant::now();
 
+    let lines = input.lines();
     let extract = Regex::new(r"(\d+)-(\d+) (.): (.+)")?;
+
+    let parse = parse.elapsed().as_secs_f64();
+
+    let time = Instant::now();
 
     let mut part1 = 0;
     let mut part2 = 0;
@@ -27,6 +33,7 @@ pub fn day02(input: String) -> Result<AocResult> {
             part2 += 1;
         }
     }
+    let time = time.elapsed().as_secs_f64();
 
-    Ok(AocResult::new(part1, part2))
+    Ok(AocResult::new(part1, part2, parse, time, 0.0))
 }

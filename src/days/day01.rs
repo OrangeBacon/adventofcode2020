@@ -1,12 +1,18 @@
-use anyhow::Result;
 use crate::AocResult;
+use anyhow::Result;
+use std::time::Instant;
 
 pub fn day01(input: String) -> Result<AocResult> {
+    let parse = Instant::now();
+
     let nums = input
         .split_whitespace()
         .map(|x| x.parse::<i32>())
-        .collect::<Result<Vec<_>,_>>()?;
+        .collect::<Result<Vec<_>, _>>()?;
 
+    let parse = parse.elapsed().as_secs_f64();
+
+    let t1 = Instant::now();
     let mut part1 = 0;
     'out: for (i, num) in nums.iter().enumerate() {
         for second in nums[(i + 1)..].iter() {
@@ -16,7 +22,9 @@ pub fn day01(input: String) -> Result<AocResult> {
             }
         }
     }
+    let t1 = t1.elapsed().as_secs_f64();
 
+    let t2 = Instant::now();
     let mut part2 = 0;
     'out2: for (i, num) in nums.iter().enumerate() {
         for (j, second) in nums[(i + 1)..].iter().enumerate() {
@@ -28,6 +36,7 @@ pub fn day01(input: String) -> Result<AocResult> {
             }
         }
     }
+    let t2 = t2.elapsed().as_secs_f64();
 
-    Ok(AocResult::new(part1, part2))
+    Ok(AocResult::new(part1, part2, parse, t1, t2))
 }

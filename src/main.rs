@@ -1,28 +1,7 @@
 use std::env;
 use std::fs;
-use std::time::Instant;
 
 use libaoc::{days::*, Solution};
-
-fn print_time(mut num: f64) {
-    let mut order = 0;
-    while num < 1.0 {
-        num *= 1000.0;
-        order += 1;
-    }
-
-    println!(
-        "{:.3}{}",
-        num,
-        match order {
-            0 => "s",
-            1 => "ms",
-            2 => "μs",
-            3 => "ns",
-            _ => "?",
-        }
-    );
-}
 
 fn run_solution(solution: Solution, path: &str) {
     let contents = match fs::read_to_string(&path) {
@@ -30,20 +9,10 @@ fn run_solution(solution: Solution, path: &str) {
         Ok(f) => f,
     };
 
-    println!("Running");
-    let now = Instant::now();
-
-    let res = solution(contents);
-
-    let execution = now.elapsed().as_secs_f64();
-
-    match res {
+    match solution(contents) {
         Ok(val) => print!("{}", val),
         Err(err) => print!("{:?}", err),
     }
-
-    print!("Execution: ");
-    print_time(execution);
 }
 
 fn main() {

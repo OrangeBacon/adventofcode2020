@@ -1,5 +1,6 @@
+use crate::{time, AocResult};
 use anyhow::Result;
-use crate::AocResult;
+use std::time::Instant;
 
 #[derive(Debug, Clone, Copy)]
 enum Instruction {
@@ -34,6 +35,7 @@ fn run_instruction(inst: &[Instruction]) -> Result<i32, i32> {
 }
 
 pub fn day08(input: String) -> Result<AocResult> {
+    let parse = Instant::now();
     let instructions = input.trim().lines().map(|x| x.split_once(" ").unwrap());
 
     let instructions: Vec<_> = instructions
@@ -47,12 +49,14 @@ pub fn day08(input: String) -> Result<AocResult> {
             }
         })
         .collect();
+    let parse = parse.elapsed().as_secs_f64();
 
-    let part1 = match run_instruction(&instructions) {
+    let (part1, t1) = time(|| match run_instruction(&instructions) {
         Ok(a) => a,
         Err(a) => a,
-    };
+    });
 
+    let t2 = Instant::now();
     let mut part2 = 0;
     let mut fixed_stream = instructions.clone();
     for (i, inst) in instructions.iter().enumerate() {
@@ -69,6 +73,7 @@ pub fn day08(input: String) -> Result<AocResult> {
 
         fixed_stream[i] = *inst;
     }
+    let t2 = t2.elapsed().as_secs_f64();
 
-    Ok(AocResult::new(part1, part2))
+    Ok(AocResult::new(part1, part2, parse, t1, t2))
 }

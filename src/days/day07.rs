@@ -1,9 +1,10 @@
+use crate::{time, AocResult};
+use anyhow::Result;
+use hashbrown::HashMap;
 use regex::Regex;
 use std::cell::RefCell;
-use hashbrown::HashMap;
 use std::rc::Rc;
-use anyhow::Result;
-use crate::AocResult;
+use std::time::Instant;
 
 #[derive(Debug, Clone)]
 struct Bag {
@@ -14,6 +15,7 @@ struct Bag {
 const TARGET: &str = "shiny gold";
 
 pub fn day07(input: String) -> Result<AocResult> {
+    let parse = Instant::now();
     let mut bags: HashMap<String, Rc<RefCell<Bag>>> = HashMap::new();
 
     let input: Vec<Vec<_>> = input
@@ -81,21 +83,29 @@ pub fn day07(input: String) -> Result<AocResult> {
         })
     }
 
-    let part1 = bags.iter().fold(0, |acc, (_, bag)| {
-        if find_recurse(bag.clone()) {
-            acc + 1
-        } else {
-            acc
-        }
-    });
-
     fn count_recurse(bag: Rc<RefCell<Bag>>) -> u32 {
         bag.borrow().contains.iter().fold(1, |acc, val| {
             acc + val.0 * count_recurse(Rc::new(RefCell::new(val.1.borrow().clone())))
         })
     }
 
-    let part2 = count_recurse(Rc::new(RefCell::new(bags.get(TARGET).unwrap().borrow().clone()))) - 1;
+    let parse = parse.elapsed().as_secs_f64();
 
-    Ok(AocResult::new(part1, part2))
+    let (part1, t1) = time(|| {
+        bags.iter().fold(0, |acc, (_, bag)| {
+            if find_recurse(bag.clone()) {
+                acc + 1
+            } else {
+                acc
+            }
+        })
+    });
+
+    let (part2, t2) = time(|| {
+        count_recurse(Rc::new(RefCell::new(
+            bags.get(TARGET).unwrap().borrow().clone(),
+        ))) - 1
+    });
+
+    Ok(AocResult::new(part1, part2, parse, t1, t2))
 }
