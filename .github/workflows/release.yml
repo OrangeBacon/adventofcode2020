@@ -56,7 +56,7 @@ jobs:
         asset_path: /home/runner/work/adventofcode2020/adventofcode2020/target/release/adventofcode2020
         asset_name: adventofcode2020
         asset_content_type: application/octet-stream
-    - run: ls -la /target/x86_64-pc-windows-gnu
+    - run: ls -la /home/runner/work/adventofcode2020/adventofcode2020/target/x86_64-pc-windows-gnu
     - name: Upload Windows
       id: upload-windows
       uses: actions/upload-release-asset@v1
@@ -64,6 +64,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: /target/x86_64-pc-windows-gnu/release/adventofcode2020.exe
+        asset_path: /home/runner/work/adventofcode2020/adventofcode2020/target/x86_64-pc-windows-gnu/release/adventofcode2020.exe
         asset_name: adventofcode2020
         asset_content_type: application/octet-stream
