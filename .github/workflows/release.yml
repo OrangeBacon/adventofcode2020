@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'day*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        override: true
+        default: true
+    - uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --release
+
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        target: x86_64-pc-windows-gnu
+        override: true
+    - uses: actions-rs/cargo@v1
+      with:
+        use-cross: true
+        command: test
+        args: --target x86_64-pc-windows-gnu --release
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+    - name: Upload Linux
+      id: upload-linux
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: /home/runner/work/adventofcode2020/adventofcode2020/target/release/adventofcode2020
+        asset_name: adventofcode2020
+        asset_content_type: application/octet-stream
+    - name: Upload Windows
+      id: upload-windows
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: /target/x86_64-pc-windows-gnu/release/adventofcode2020.exe
+        asset_name: adventofcode2020
+        asset_content_type: application/octet-stream
