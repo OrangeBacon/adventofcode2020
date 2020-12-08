@@ -59,3 +59,23 @@ pub fn day05(input: String) -> Result<AocResult> {
 
     Ok(AocResult::new(part1, part2, parse, t1, t2))
 }
+
+#[cfg(test)]
+mod test {
+    use crate::days::*;
+    use anyhow::Result;
+
+    #[test]
+    fn day05a() -> Result<()> {
+        let res = day05::day05(DEFAULT_DATA[4].to_string())?;
+        assert_eq!(res.part1, "953");
+        Ok(())
+    }
+
+    #[test]
+    fn day05b() -> Result<()> {
+        let res = day05::day05(DEFAULT_DATA[4].to_string())?;
+        assert_eq!(res.part2, "615");
+        Ok(())
+    }
+}

@@ -9,31 +9,7 @@ use strfmt::Format;
 #[macro_use]
 extern crate clap;
 
-use libaoc::{days::*, FloatTime, Solution};
-
-/// function to run each day's problem
-const SOLUTIONS: &[Solution] = &[
-    day01::day01,
-    day02::day02,
-    day03::day03,
-    day04::day04,
-    day05::day05,
-    day06::day06,
-    day07::day07,
-    day08::day08,
-];
-
-/// list of all default test data
-const DEFAULT_DATA: &[&str] = &[
-    include_str!("../data/day1.txt"),
-    include_str!("../data/day2.txt"),
-    include_str!("../data/day3.txt"),
-    include_str!("../data/day4.txt"),
-    include_str!("../data/day5.txt"),
-    include_str!("../data/day6.txt"),
-    include_str!("../data/day7.txt"),
-    include_str!("../data/day8.txt"),
-];
+use libaoc::{days::*, FloatTime};
 
 /// gets the data to run a solution on
 /// takes the index of the solution that is being run
