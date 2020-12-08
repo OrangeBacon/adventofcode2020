@@ -7,6 +7,9 @@ use std::time::Instant;
 
 pub mod days;
 
+mod vm;
+pub use vm::*;
+
 /// type for each day's function, implemented by days/*.rs
 pub type Solution = fn(String) -> Result<AocResult>;
 
