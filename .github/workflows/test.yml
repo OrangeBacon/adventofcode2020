@@ -11,16 +11,53 @@ env:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
+
     - uses: actions-rs/toolchain@v1
       with:
         toolchain: nightly
-        default: true
         override: true
-    - run: cargo test --release
+        default: true
+    - uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --release
+    - uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --release
+
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        target: x86_64-pc-windows-msvc
+        override: true
+    - uses: actions-rs/cargo@v1
+      with:
+        use-cross: true
+        command: test
+        args: --target x86_64-pc-windows-msvc --release
+    - uses: actions-rs/cargo@v1
+      with:
+        use-cross: true
+        command: build
+        args: --target x86_64-pc-windows-msvc --release
+
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        target: x86_64-apple-darwin
+        override: true
+    - uses: actions-rs/cargo@v1
+      with:
+        use-cross: true
+        command: test
+        args: --target x86_64-apple-darwin --release
+    - uses: actions-rs/cargo@v1
+      with:
+        use-cross: true
+        command: build
+        args: --target x86_64-apple-darwin --release
