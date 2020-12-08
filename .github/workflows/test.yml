@@ -27,7 +27,7 @@ jobs:
         args: --release
     - uses: actions-rs/cargo@v1
       with:
-        command: build
+        command: run
         args: --release
 
     - uses: actions-rs/toolchain@v1
@@ -43,21 +43,5 @@ jobs:
     - uses: actions-rs/cargo@v1
       with:
         use-cross: true
-        command: build
+        command: run
         args: --target x86_64-pc-windows-gnu --release
-
-    - uses: actions-rs/toolchain@v1
-      with:
-        toolchain: nightly
-        target: x86_64-apple-darwin
-        override: true
-    - uses: actions-rs/cargo@v1
-      with:
-        use-cross: true
-        command: test
-        args: --target x86_64-apple-darwin --release
-    - uses: actions-rs/cargo@v1
-      with:
-        use-cross: true
-        command: build
-        args: --target x86_64-apple-darwin --release
