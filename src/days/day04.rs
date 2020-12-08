@@ -6,8 +6,9 @@ use std::time::Instant;
 pub fn day04(input: String) -> Result<AocResult> {
     let parse = Instant::now();
 
-    let datas: Vec<Vec<Vec<_>>> = input
-        .split("\n\n")
+    let line = Regex::new(r"(\r?\n){2}")?;
+
+    let datas: Vec<Vec<Vec<_>>> = line.split(&input)
         .map(|x| {
             x.split_whitespace()
                 .map(|y| y.split(':').collect())

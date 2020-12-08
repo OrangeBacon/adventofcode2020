@@ -3,14 +3,17 @@ use anyhow::Result;
 use hashbrown::HashSet;
 use std::iter::FromIterator;
 use std::time::Instant;
+use regex::Regex;
 
 pub fn day06(input: String) -> Result<AocResult> {
     let parse = Instant::now();
-    let chars1 = input
-        .split("\n\n")
-        .map(|x| x.chars().filter(|&x| x != '\n'));
 
-    let chars2 = input.split("\n\n").map(|x| {
+    let line = Regex::new(r"(\r?\n){2}")?;
+
+    let chars1 = line.split(&input)
+        .map(|x| x.chars().filter(|&x| x != '\n' && x != '\r'));
+
+    let chars2 = line.split(&input).map(|x| {
         x.lines()
             .map(|x| x.chars().collect())
             .collect::<Vec<Vec<_>>>()
