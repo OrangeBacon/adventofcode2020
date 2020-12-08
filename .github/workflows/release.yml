@@ -54,9 +54,8 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: /home/runner/work/adventofcode2020/adventofcode2020/target/release/adventofcode2020
-        asset_name: adventofcode2020
+        asset_name: aoc2020-linux-x86_64
         asset_content_type: application/octet-stream
-    - run: ls -la /home/runner/work/adventofcode2020/adventofcode2020/target/x86_64-pc-windows-gnu
     - name: Upload Windows
       id: upload-windows
       uses: actions/upload-release-asset@v1
@@ -65,5 +64,5 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: /home/runner/work/adventofcode2020/adventofcode2020/target/x86_64-pc-windows-gnu/release/adventofcode2020.exe
-        asset_name: adventofcode2020
+        asset_name: aoc2020-windows-x86_64.exe
         asset_content_type: application/octet-stream
