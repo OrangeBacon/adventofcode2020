@@ -35,45 +35,60 @@ impl AocResult {
     }
 }
 
-/// nicely format f64 as closest metric time unit
-fn print_time(mut num: f64, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-    let mut order = 0;
+pub struct FloatTime {
+    time: f64,
+}
 
-    if num == 0.0 {
-        return writeln!(f, "no measured time");
+impl From<f64> for FloatTime {
+    fn from(f: f64) -> Self {
+        FloatTime { time: f }
     }
+}
 
-    while num < 1.0 {
-        num *= 1000.0;
-        order += 1;
-    }
+impl fmt::Display for FloatTime {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        let mut order = 0;
+        let mut time = self.time;
 
-    writeln!(
-        f,
-        "{:.3}{}",
-        num,
-        match order {
-            0 => "s",
-            1 => "ms",
-            2 => "μs",
-            3 => "ns",
-            _ => "?",
+        if time == 0.0 {
+            return write!(f, "no measured time");
         }
-    )
+
+        while time < 1.0 {
+            time *= 1000.0;
+            order += 1;
+        }
+
+        write!(
+            f,
+            "{:.3}{}",
+            time,
+            match order {
+                0 => "s",
+                1 => "ms",
+                2 => "μs",
+                3 => "ns",
+                _ => "?",
+            }
+        )
+    }
 }
 
 impl fmt::Display for AocResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        write!(f, "{}, {}", self.part1, self.part2)
+    }
+}
+
+impl fmt::Debug for AocResult {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         writeln!(f, "Results:")?;
         writeln!(f, "  Part 1: {}", self.part1)?;
         writeln!(f, "  Part 2: {}", self.part2)?;
         writeln!(f, "Timing:")?;
-        write!(f, "  Parsing:")?;
-        print_time(self.parse_time, f)?;
-        write!(f, "  Part 1:")?;
-        print_time(self.part1_time, f)?;
-        write!(f, "  Part 2:")?;
-        print_time(self.part2_time, f)
+        writeln!(f, "  Parsing: {}", FloatTime::from(self.parse_time))?;
+        writeln!(f, "  Part 1: {}", FloatTime::from(self.part1_time))?;
+        writeln!(f, "  Part 2: {}", FloatTime::from(self.part2_time))
     }
 }
 
