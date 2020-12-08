@@ -1,3 +1,6 @@
+use anyhow::Result;
+use crate::AocResult;
+
 fn iter(lines: &Vec<Vec<char>>, depth: usize, height: usize) -> i32 {
     let mut x = 0;
     let mut trees = 0;
@@ -13,17 +16,15 @@ fn iter(lines: &Vec<Vec<char>>, depth: usize, height: usize) -> i32 {
     trees
 }
 
-pub fn day03(input: String) {
+pub fn day03(input: String) -> Result<AocResult> {
     let lines = input
         .lines()
         .map(|x| x.chars().collect::<Vec<_>>())
         .collect::<Vec<_>>();
 
-    let three = iter(&lines, 3, 1);
-    println!("{}", three);
+    let part1 = iter(&lines, 3, 1);
 
-    println!(
-        "{}",
-        iter(&lines, 1, 1) * three * iter(&lines, 5, 1) * iter(&lines, 7, 1) * iter(&lines, 1, 2)
-    );
+    let part2 = iter(&lines, 1, 1) * part1 * iter(&lines, 5, 1) * iter(&lines, 7, 1) * iter(&lines, 1, 2);
+
+    Ok(AocResult::new(part1, part2))
 }

@@ -1,3 +1,6 @@
+use anyhow::Result;
+use crate::AocResult;
+
 #[derive(Debug, Clone, Copy)]
 enum Instruction {
     Acc(i32),
@@ -5,9 +8,9 @@ enum Instruction {
     Nop(i32),
 }
 
-fn run_instruction(inst : &[Instruction]) -> Result<i32,i32> {
+fn run_instruction(inst: &[Instruction]) -> Result<i32, i32> {
     let mut acc = 0;
-    let mut ip : i32 = 0;
+    let mut ip: i32 = 0;
     let mut has_run = vec![false; inst.len()];
 
     loop {
@@ -30,21 +33,27 @@ fn run_instruction(inst : &[Instruction]) -> Result<i32,i32> {
     }
 }
 
-pub fn day08(input: String) {
-    let instructions = input.trim().lines().map(|x|x.split_once(" ").unwrap());
+pub fn day08(input: String) -> Result<AocResult> {
+    let instructions = input.trim().lines().map(|x| x.split_once(" ").unwrap());
 
-    let instructions : Vec<_>= instructions.map(|(name,arg)| {
-        let num = arg.parse::<i32>().unwrap();
-        match name {
-            "acc"=>Instruction::Acc(num),
-            "jmp"=>Instruction::Jmp(num),
-            "nop"=>Instruction::Nop(num),
-            _ => panic!()
-        }
-    }).collect();
+    let instructions: Vec<_> = instructions
+        .map(|(name, arg)| {
+            let num = arg.parse::<i32>().unwrap();
+            match name {
+                "acc" => Instruction::Acc(num),
+                "jmp" => Instruction::Jmp(num),
+                "nop" => Instruction::Nop(num),
+                _ => panic!(),
+            }
+        })
+        .collect();
 
-    println!("{:?}", run_instruction(&instructions));
+    let part1 = match run_instruction(&instructions) {
+        Ok(a) => a,
+        Err(a) => a,
+    };
 
+    let mut part2 = 0;
     let mut fixed_stream = instructions.clone();
     for (i, inst) in instructions.iter().enumerate() {
         match inst {
@@ -54,10 +63,12 @@ pub fn day08(input: String) {
         }
 
         if let Ok(acc) = run_instruction(&fixed_stream) {
-            println!("{}", acc);
+            part2 = acc;
             break;
         }
 
         fixed_stream[i] = *inst;
     }
+
+    Ok(AocResult::new(part1, part2))
 }

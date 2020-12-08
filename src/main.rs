@@ -1,19 +1,8 @@
-#![feature(str_split_once)]
-
 use std::env;
 use std::fs;
 use std::time::Instant;
 
-mod day01;
-mod day02;
-mod day03;
-mod day04;
-mod day05;
-mod day06;
-mod day07;
-mod day08;
-
-type Solution = fn(String) -> ();
+use libaoc::{days::*, Solution};
 
 fn print_time(mut num: f64) {
     let mut order = 0;
@@ -44,9 +33,15 @@ fn run_solution(solution: Solution, path: &str) {
     println!("Running");
     let now = Instant::now();
 
-    solution(contents);
+    let res = solution(contents);
 
     let execution = now.elapsed().as_secs_f64();
+
+    match res {
+        Ok(val) => print!("{}", val),
+        Err(err) => print!("{:?}", err),
+    }
+
     print!("Execution: ");
     print_time(execution);
 }

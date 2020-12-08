@@ -1,7 +1,9 @@
 use regex::Regex;
 use std::cell::RefCell;
-use std::collections::HashMap;
+use hashbrown::HashMap;
 use std::rc::Rc;
+use anyhow::Result;
+use crate::AocResult;
 
 #[derive(Debug, Clone)]
 struct Bag {
@@ -11,7 +13,7 @@ struct Bag {
 
 const TARGET: &str = "shiny gold";
 
-pub fn day07(input: String) {
+pub fn day07(input: String) -> Result<AocResult> {
     let mut bags: HashMap<String, Rc<RefCell<Bag>>> = HashMap::new();
 
     let input: Vec<Vec<_>> = input
@@ -19,7 +21,7 @@ pub fn day07(input: String) {
         .map(|x| x.split("contain").collect())
         .collect();
 
-    let remove_bag_suffix = Regex::new(r" (bag|bags)\.*$").unwrap();
+    let remove_bag_suffix = Regex::new(r" (bag|bags)\.*$")?;
 
     for line in input {
         let name = remove_bag_suffix.replace(line[0].trim(), "");
@@ -30,7 +32,7 @@ pub fn day07(input: String) {
         let contains = contains
             .iter()
             .map(|x| x.split_once(" ").unwrap())
-            .map(|(a,b)| {
+            .map(|(a, b)| {
                 if a == "no" {
                     None
                 } else {
@@ -79,7 +81,7 @@ pub fn day07(input: String) {
         })
     }
 
-    let res = bags.iter().fold(0, |acc, (_, bag)| {
+    let part1 = bags.iter().fold(0, |acc, (_, bag)| {
         if find_recurse(bag.clone()) {
             acc + 1
         } else {
@@ -87,17 +89,13 @@ pub fn day07(input: String) {
         }
     });
 
-    println!("{}", res);
-
     fn count_recurse(bag: Rc<RefCell<Bag>>) -> u32 {
         bag.borrow().contains.iter().fold(1, |acc, val| {
             acc + val.0 * count_recurse(Rc::new(RefCell::new(val.1.borrow().clone())))
         })
     }
 
-    let res = Rc::new(RefCell::new(
-        bags.get(TARGET).unwrap().borrow().clone(),
-    ));
+    let part2 = count_recurse(Rc::new(RefCell::new(bags.get(TARGET).unwrap().borrow().clone()))) - 1;
 
-    println!("{}", count_recurse(res) - 1);
+    Ok(AocResult::new(part1, part2))
 }

@@ -5,6 +5,10 @@ authors = ["OrangeBacon <computer.backup.15@gmail.com>"]
 edition = "2018"
 publish = false
 
+[lib]
+name = "libaoc"
+
 [dependencies]
 regex = "1"
 hashbrown = "0.9"
+anyhow = "1"

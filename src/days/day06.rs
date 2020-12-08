@@ -1,16 +1,16 @@
 use hashbrown::HashSet;
 use std::iter::FromIterator;
+use anyhow::Result;
+use crate::AocResult;
 
-pub fn day06(input: String) {
+pub fn day06(input: String) -> Result<AocResult> {
     let chars = input
         .split("\n\n")
         .map(|x| x.chars().filter(|&x| x != '\n'));
 
-    let res = chars.fold(0, |acc, group| {
+    let part1 = chars.fold(0, |acc, group| {
         HashSet::<char>::from_iter(group).len() + acc
     });
-
-    println!("{}", res);
 
     let chars = input.split("\n\n").map(|x| {
         x.lines()
@@ -18,7 +18,7 @@ pub fn day06(input: String) {
             .collect::<Vec<Vec<_>>>()
     });
 
-    let res = chars.fold(0, |acc, group| {
+    let part2 = chars.fold(0, |acc, group| {
         group
             .iter()
             .map(|x| HashSet::from_iter(x.iter().map(|x| *x)))
@@ -30,5 +30,5 @@ pub fn day06(input: String) {
             + acc
     });
 
-    println!("{}", res);
+    Ok(AocResult::new(part1, part2))
 }

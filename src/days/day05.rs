@@ -1,11 +1,13 @@
 use std::cmp::max;
+use anyhow::Result;
+use crate::AocResult;
 
-pub fn day05(input: String) {
+pub fn day05(input: String) -> Result<AocResult> {
     let lines: Vec<_> = input.lines().collect();
 
     let mut seats = [[false; 8]; 128];
 
-    let highest = lines.iter().fold(0, |acc, &line| {
+    let part1 = lines.iter().fold(0, |acc, &line| {
         let mut row = 0;
         let mut col = 0;
         let mut row_size = 64;
@@ -31,9 +33,8 @@ pub fn day05(input: String) {
         max(acc, row * 8 + col)
     });
 
-    println!("{}", highest);
-
     let mut found = false;
+    let mut part2 = 0;
     for (y, row) in seats.iter().enumerate() {
         if !found {
             found = row.iter().fold(false, |a, x| a | x);
@@ -43,35 +44,11 @@ pub fn day05(input: String) {
                 .enumerate()
                 .fold(0, |_, (x, v)| if *v { 0 } else { y * 8 + x });
             if res > 0 {
-                println!("{}", res);
+                part2 = res;
                 break;
             }
         }
     }
 
-    day05v2(input);
-}
-
-use std::collections::HashSet;
-
-fn day05v2(input: String) {
-    let lines: HashSet<_> = input
-        .lines()
-        .map(|v| {
-            i32::from_str_radix(
-                &v.replace("F", "0")
-                    .replace("B", "1")
-                    .replace("L", "0")
-                    .replace("R", "1"),
-                2,
-            )
-            .unwrap()
-        })
-        .collect();
-    println!("{}", lines.iter().max().unwrap());
-
-    let min = *lines.iter().min().unwrap();
-    let max = *lines.iter().max().unwrap();
-    let ids: HashSet<_> = (min..max).collect();
-    println!("{}", (&ids - &lines).iter().next().unwrap());
+    Ok(AocResult::new(part1,part2))
 }
