@@ -1,6 +1,6 @@
 console.log(
     require("fs")
-    .readFileSync("data/BigBigDay5.txt", "utf-8")
+    .readFileSync("data/day5.txt", "utf-8")
     .trim()
     .split("\n")
     .map(x=>parseInt(x.trim().replace(/[FBLR]/g,x=>+"BR".includes(x)),2))

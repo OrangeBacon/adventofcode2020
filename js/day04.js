@@ -1,8 +1,8 @@
 console.log(
     require('fs')
     .readFileSync('data/day4.txt', 'utf-8')
-    .split("\n\n")
-    .map(x=>x.split(/[ \n]/).map(x=>x.split(':')))
+    .split(/(\r?\n){2}/)
+    .map(x=>x.split(/[ \n]/).map(x=>x.trim().split(':')))
     .filter(x=>x.length==8-!x.some(y=>y[0]=="cid"))
     .reduce(([a,b],x)=>[a+1, b+x.map(([k,v])=>
         ({byr:/19[2-9][0-9]|200[0-2]/,

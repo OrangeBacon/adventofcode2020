@@ -13,4 +13,3 @@ console.log(
     d,d]).map((x,i,[f])=>i==0?0:i==1?f(x)[0]:x.map((_,i,a,j=JSON)=>
         f(x=j.parse(j.stringify(a)),y=x[i][0],x[i][0]=y==0?y:y==1?2:1))
         .filter(([_,b])=>!b)[0][0]).slice(1));
-

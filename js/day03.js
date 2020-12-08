@@ -7,3 +7,4 @@ console.log(
             .filter(x=>x.length>0)
             .map(x=>x.split(''))
             .reduce((p,c,i)=>[(i%x[1]==0)?(c[p[1]]=='#')+p[0]:p[0],(i%x[1]==0)?(p[1]+x[0])%c.length:p[1]],[0,0])[0],1)));
+            
