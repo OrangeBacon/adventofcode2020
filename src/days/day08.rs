@@ -1,7 +1,8 @@
-use libaoc::{time, AocResult, Instruction, VM};
 use anyhow::Result;
+use libaoc::{aoc, time, AocResult, Instruction, VM};
 use std::time::Instant;
 
+#[aoc]
 pub fn day08(input: String) -> Result<AocResult> {
     let parse = Instant::now();
     let vm = VM::file_parse(&input);
@@ -42,15 +43,15 @@ mod test {
     use anyhow::Result;
 
     #[test]
-    fn day07a() -> Result<()> {
-        let res = day08::day08(DEFAULT_DATA[7].to_string())?;
+    fn day08a() -> Result<()> {
+        let res = day08::day08(SOLUTIONS[7].file.to_string())?;
         assert_eq!(res.part1, "1915");
         Ok(())
     }
 
     #[test]
-    fn day07b() -> Result<()> {
-        let res = day08::day08(DEFAULT_DATA[7].to_string())?;
+    fn day08b() -> Result<()> {
+        let res = day08::day08(SOLUTIONS[7].file.to_string())?;
         assert_eq!(res.part2, "944");
         Ok(())
     }

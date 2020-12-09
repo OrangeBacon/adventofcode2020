@@ -1,5 +1,5 @@
-use libaoc::{time, AocResult};
 use anyhow::Result;
+use libaoc::{aoc, time, AocResult};
 use std::time::Instant;
 
 fn iter(lines: &Vec<Vec<char>>, depth: usize, height: usize) -> i32 {
@@ -17,6 +17,7 @@ fn iter(lines: &Vec<Vec<char>>, depth: usize, height: usize) -> i32 {
     trees
 }
 
+#[aoc]
 pub fn day03(input: String) -> Result<AocResult> {
     let parse = Instant::now();
     let lines = input
@@ -41,14 +42,14 @@ mod test {
 
     #[test]
     fn day03a() -> Result<()> {
-        let res = day03::day03(DEFAULT_DATA[2].to_string())?;
+        let res = day03::day03(SOLUTIONS[2].file.to_string())?;
         assert_eq!(res.part1, "254");
         Ok(())
     }
 
     #[test]
     fn day03b() -> Result<()> {
-        let res = day03::day03(DEFAULT_DATA[2].to_string())?;
+        let res = day03::day03(SOLUTIONS[2].file.to_string())?;
         assert_eq!(res.part2, "1666768320");
         Ok(())
     }

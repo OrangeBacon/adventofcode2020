@@ -1,6 +1,6 @@
-use libaoc::{time, AocResult};
 use anyhow::Result;
 use hashbrown::HashMap;
+use libaoc::{aoc, time, AocResult};
 use regex::Regex;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -14,6 +14,7 @@ struct Bag {
 
 const TARGET: &str = "shiny gold";
 
+#[aoc]
 pub fn day07(input: String) -> Result<AocResult> {
     let parse = Instant::now();
     let mut bags: HashMap<String, Rc<RefCell<Bag>>> = HashMap::new();
@@ -117,16 +118,15 @@ mod test {
 
     #[test]
     fn day07a() -> Result<()> {
-        let res = day07::day07(DEFAULT_DATA[6].to_string())?;
+        let res = day07::day07(SOLUTIONS[6].file.to_string())?;
         assert_eq!(res.part1, "278");
         Ok(())
     }
 
     #[test]
     fn day07b() -> Result<()> {
-        let res = day07::day07(DEFAULT_DATA[6].to_string())?;
+        let res = day07::day07(SOLUTIONS[6].file.to_string())?;
         assert_eq!(res.part2, "45157");
         Ok(())
     }
 }
-

@@ -8,8 +8,19 @@ use std::time::Instant;
 mod vm;
 pub use vm::*;
 
+pub use aoc_attr::aoc;
+
 /// type for each day's function, implemented by days/*.rs
-pub type Solution = fn(String) -> Result<AocResult>;
+pub struct Solution {
+    pub run: fn(String) -> Result<AocResult>,
+    pub file: &'static str,
+}
+
+impl Solution {
+    pub fn run(&self, arg: String) -> Result<AocResult> {
+        (self.run)(arg)
+    }
+}
 
 /// generic result container for each day
 pub struct AocResult {

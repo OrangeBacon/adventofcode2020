@@ -1,14 +1,16 @@
-use libaoc::AocResult;
 use anyhow::Result;
+use libaoc::{aoc, AocResult};
 use regex::Regex;
 use std::time::Instant;
 
+#[aoc]
 pub fn day04(input: String) -> Result<AocResult> {
     let parse = Instant::now();
 
     let line = Regex::new(r"(\r?\n){2}")?;
 
-    let datas: Vec<Vec<Vec<_>>> = line.split(&input)
+    let datas: Vec<Vec<Vec<_>>> = line
+        .split(&input)
         .map(|x| {
             x.split_whitespace()
                 .map(|y| y.split(':').collect())
@@ -71,14 +73,14 @@ mod test {
 
     #[test]
     fn day04a() -> Result<()> {
-        let res = day04::day04(DEFAULT_DATA[3].to_string())?;
+        let res = day04::day04(SOLUTIONS[3].file.to_string())?;
         assert_eq!(res.part1, "228");
         Ok(())
     }
 
     #[test]
     fn day04b() -> Result<()> {
-        let res = day04::day04(DEFAULT_DATA[3].to_string())?;
+        let res = day04::day04(SOLUTIONS[3].file.to_string())?;
         assert_eq!(res.part2, "175");
         Ok(())
     }

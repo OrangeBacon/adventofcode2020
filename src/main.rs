@@ -1,24 +1,24 @@
 #![feature(str_split_once)]
 
 use anyhow::{Error, Result};
+use clap::clap_app;
+use libaoc::FloatTime;
 use regex::Regex;
 use std::collections::HashMap;
 use std::fs;
 use std::ops::Range;
 use std::time::Instant;
 use strfmt::Format;
-use libaoc::FloatTime;
-use clap::clap_app;
 
 mod days;
-use days::{DEFAULT_DATA, SOLUTIONS};
+use days::SOLUTIONS;
 
 /// gets the data to run a solution on
 /// takes the index of the solution that is being run
 /// if path is none, then the default data is used, otherwise reads from path
 fn get_data(solution: usize, path: Option<&str>) -> String {
     if path.is_none() {
-        return DEFAULT_DATA[solution].to_string();
+        return SOLUTIONS[solution].file.to_string();
     }
 
     let path = path.unwrap();
@@ -42,7 +42,7 @@ fn run_solution(solution: usize, path: Option<&str>, debug: bool) {
     let file_data = get_data(solution, path);
 
     let now = Instant::now();
-    let res = SOLUTIONS[solution](file_data);
+    let res = SOLUTIONS[solution].run(file_data);
     let end = now.elapsed().as_secs_f64();
 
     match res {

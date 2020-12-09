@@ -1,8 +1,9 @@
-use libaoc::{time, AocResult};
 use anyhow::Result;
+use libaoc::{aoc, time, AocResult};
 use std::cmp::max;
 use std::time::Instant;
 
+#[aoc]
 pub fn day05(input: String) -> Result<AocResult> {
     let parse = Instant::now();
     let lines: Vec<_> = input.lines().collect();
@@ -67,14 +68,14 @@ mod test {
 
     #[test]
     fn day05a() -> Result<()> {
-        let res = day05::day05(DEFAULT_DATA[4].to_string())?;
+        let res = day05::day05(SOLUTIONS[4].file.to_string())?;
         assert_eq!(res.part1, "953");
         Ok(())
     }
 
     #[test]
     fn day05b() -> Result<()> {
-        let res = day05::day05(DEFAULT_DATA[4].to_string())?;
+        let res = day05::day05(SOLUTIONS[4].file.to_string())?;
         assert_eq!(res.part2, "615");
         Ok(())
     }

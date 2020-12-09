@@ -1,16 +1,18 @@
-use libaoc::{time, AocResult};
 use anyhow::Result;
 use hashbrown::HashSet;
+use libaoc::{aoc, time, AocResult};
+use regex::Regex;
 use std::iter::FromIterator;
 use std::time::Instant;
-use regex::Regex;
 
+#[aoc]
 pub fn day06(input: String) -> Result<AocResult> {
     let parse = Instant::now();
 
     let line = Regex::new(r"(\r?\n){2}")?;
 
-    let chars1 = line.split(&input)
+    let chars1 = line
+        .split(&input)
         .map(|x| x.chars().filter(|&x| x != '\n' && x != '\r'));
 
     let chars2 = line.split(&input).map(|x| {
@@ -50,14 +52,14 @@ mod test {
 
     #[test]
     fn day06a() -> Result<()> {
-        let res = day06::day06(DEFAULT_DATA[5].to_string())?;
+        let res = day06::day06(SOLUTIONS[5].file.to_string())?;
         assert_eq!(res.part1, "7283");
         Ok(())
     }
 
     #[test]
     fn day06b() -> Result<()> {
-        let res = day06::day06(DEFAULT_DATA[5].to_string())?;
+        let res = day06::day06(SOLUTIONS[5].file.to_string())?;
         assert_eq!(res.part2, "3520");
         Ok(())
     }

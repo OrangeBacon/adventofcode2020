@@ -1,8 +1,9 @@
-use libaoc::AocResult;
 use anyhow::Result;
+use libaoc::{aoc, AocResult};
 use regex::Regex;
 use std::time::Instant;
 
+#[aoc]
 pub fn day02(input: String) -> Result<AocResult> {
     let parse = Instant::now();
 
@@ -45,14 +46,14 @@ mod test {
 
     #[test]
     fn day02a() -> Result<()> {
-        let res = day02::day02(DEFAULT_DATA[1].to_string())?;
+        let res = day02::day02(SOLUTIONS[1].file.to_string())?;
         assert_eq!(res.part1, "483");
         Ok(())
     }
 
     #[test]
     fn day02b() -> Result<()> {
-        let res = day02::day02(DEFAULT_DATA[1].to_string())?;
+        let res = day02::day02(SOLUTIONS[1].file.to_string())?;
         assert_eq!(res.part2, "482");
         Ok(())
     }

@@ -16,5 +16,6 @@ libaoc = {path = "libaoc"}
 
 [workspace]
 members = [
-    "libaoc"
+    "libaoc",
+    "libaoc/aoc_attr"
 ]

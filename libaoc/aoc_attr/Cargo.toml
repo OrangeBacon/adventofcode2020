@@ -1,12 +1,14 @@
 [package]
-name = "libaoc"
+name = "aoc_attr"
 version = "0.1.0"
 authors = ["OrangeBacon <computer.backup.15@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
-anyhow = "1"
-aoc_attr = { path = "aoc_attr" }
+[lib]
+proc-macro = true
 
+[dependencies]
+syn = { version = "1.0", features = ["full"] }
+quote = "1.0"
