@@ -1,10 +1,12 @@
+#![feature(proc_macro_span)]
+
 extern crate proc_macro;
 
-use proc_macro::TokenStream;
-use proc_macro2::{Spacing, Punct};
-use quote::{quote, quote_spanned, format_ident};
+use proc_macro::{Span, TokenStream};
+use proc_macro2::{Punct, Spacing};
+use quote::{format_ident, quote};
 use syn::{
-    parse::{ParseStream, Result, Parse},
+    parse::{Parse, ParseStream, Result},
     parse_macro_input, ItemFn, LitInt, LitStr, Token,
 };
 
@@ -26,58 +28,41 @@ impl Parse for AocTestAttributes {
 }
 
 /// annotates a function with a solution struct containing the function
-/// and the input data for that day
+/// and the input data for that day.  also generates the test suite for the day
 #[proc_macro_attribute]
 pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
-    let ast = parse_macro_input!(item as ItemFn);
-    let name = ast.sig.ident.clone();
+    // re-name the original function, so it can be replaced with a getter
+    let mut ast = parse_macro_input!(item as ItemFn);
+    let provided_name = ast.sig.ident.clone();
+    let new_name = format_ident!("{}_run", provided_name);
+    ast.sig.ident = new_name.clone();
 
-    // the function name is supposed to match /^day(\d{2})$/
-    // where the number is between 1 and 25 inclusive
+    // parse the file name into a day number
+    let call_site = Span::call_site();
+    let file = call_site.source_file().path();
+    let file = file.file_name().unwrap().to_str().unwrap();
+    let nums: String = file.chars().filter(|x| ('0'..='9').contains(x)).collect();
+    let day_number = nums.parse::<u32>().unwrap();
 
-    // emitting compile_error!(...) with name's span causes an error to
-    // be emitted at name during compilation
+    // parse the provided test results
+    let AocTestAttributes { part1, part2 } = parse_macro_input!(attr as AocTestAttributes);
 
-    let name_str = format!("{}", name);
-    if name_str.len() != 5 || &name_str[..3] != "day" {
-        return TokenStream::from(quote_spanned! {
-            name.span() => compile_error!("Invalid aoc function name");
-        });
-    }
-
-    let day_number = match name_str[3..].parse::<u32>() {
-        Ok(a) if a > 0 && a <= 25 => a,
-        Err(e) => {
-            let msg = format!("Unable to parse aoc day number: {}", e);
-            let msg = LitStr::new(&msg, name.span());
-            return TokenStream::from(quote_spanned! {
-                name.span() => compile_error!(#msg);
-            });
-        }
-        _ => {
-            return TokenStream::from(quote_spanned! {
-                name.span() => compile_error!("Aoc day number out of range");
-            })
-        }
-    };
-
-    let AocTestAttributes {
-        part1,
-        part2,
-    } = parse_macro_input!(attr as AocTestAttributes);
-
+    let name = format!("Day {} - {}", day_number, provided_name);
     let file = format!("../../data/day{}.txt", day_number);
-    let day_index = LitInt::new(&(day_number - 1).to_string(), name.span());
+    let day_index = LitInt::new(&(day_number - 1).to_string(), provided_name.span());
     let fn_name = format_ident!("day{:02}", day_number);
     let part1_name = format_ident!("day{:02}a", day_number);
     let part2_name = format_ident!("day{:02}b", day_number);
     let hash = Punct::new('#', Spacing::Alone);
 
     let expanded = quote! {
-        pub const solution: libaoc::Solution = libaoc::Solution {
-            run: #name,
-            file: include_str!(#file),
-        };
+        pub fn #provided_name() -> libaoc::Solution {
+            libaoc::Solution {
+                name: #name,
+                run: #new_name,
+                file: include_str!(#file),
+            }
+        }
 
         #ast
 
@@ -88,14 +73,16 @@ pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
 
             #[test]
             fn #part1_name() -> Result<()> {
-                let res = #fn_name::#fn_name(SOLUTIONS[#day_index].file.to_string())?;
+                let res = #fn_name::#provided_name()
+                    .run(SOLUTIONS[#day_index]().file.to_string())?;
                 assert_eq!(res.part1, #part1);
                 Ok(())
             }
 
             #[test]
             fn #part2_name() -> Result<()> {
-                let res = #fn_name::#fn_name(SOLUTIONS[#day_index].file.to_string())?;
+                let res = #fn_name::#provided_name()
+                    .run(SOLUTIONS[#day_index]().file.to_string())?;
                 assert_eq!(res.part2, #part2);
                 Ok(())
             }

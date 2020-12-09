@@ -11,7 +11,9 @@ pub use vm::*;
 pub use aoc_attr::aoc;
 
 /// type for each day's function, implemented by days/*.rs
+pub type SolutionGetter = fn() -> Solution;
 pub struct Solution {
+    pub name: &'static str,
     pub run: fn(String) -> Result<AocResult>,
     pub file: &'static str,
 }

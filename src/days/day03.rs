@@ -18,7 +18,7 @@ fn iter(lines: &Vec<Vec<char>>, depth: usize, height: usize) -> i32 {
 }
 
 #[aoc("254", "1666768320")]
-pub fn day03(input: String) -> Result<AocResult> {
+pub fn solve(input: String) -> Result<AocResult> {
     let parse = Instant::now();
     let lines = input
         .lines()

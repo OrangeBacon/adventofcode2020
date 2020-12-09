@@ -3,7 +3,7 @@ use libaoc::{aoc, AocResult};
 use std::time::Instant;
 
 #[aoc("964875", "158661360")]
-pub fn day01(input: String) -> Result<AocResult> {
+pub fn solve(input: String) -> Result<AocResult> {
     let parse = Instant::now();
 
     let nums = input

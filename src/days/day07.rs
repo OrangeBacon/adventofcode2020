@@ -15,7 +15,7 @@ struct Bag {
 const TARGET: &str = "shiny gold";
 
 #[aoc("278", "45157")]
-pub fn day07(input: String) -> Result<AocResult> {
+pub fn solve(input: String) -> Result<AocResult> {
     let parse = Instant::now();
     let mut bags: HashMap<String, Rc<RefCell<Bag>>> = HashMap::new();
 

@@ -4,7 +4,7 @@ use libaoc::{aoc, AocResult};
 use std::time::Instant;
 
 #[aoc("3199139634", "438559930")]
-pub fn day09(input: String) -> Result<AocResult> {
+pub fn solve(input: String) -> Result<AocResult> {
     let parse = Instant::now();
     let nums: Vec<_> = input.lines().map(|x| x.parse::<u64>().unwrap()).collect();
     let parse = parse.elapsed().as_secs_f64();
@@ -16,11 +16,7 @@ pub fn day09(input: String) -> Result<AocResult> {
     for i in 0..(nums.len() - window_size) {
         let window = &nums[i..(i + window_size)];
         let test = nums[i + window_size];
-        let vals = window
-            .iter()
-            .permutations(2)
-            .map(|x| x[0] + x[1])
-            .find(|&x| x == test);
+        let vals = window.iter().permutations(2).find(|x| x[0] + x[1] == test);
         if vals.is_none() {
             part1 = test;
             break;

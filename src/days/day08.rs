@@ -3,7 +3,7 @@ use libaoc::{aoc, time, AocResult, Instruction, VM};
 use std::time::Instant;
 
 #[aoc("1915", "944")]
-pub fn day08(input: String) -> Result<AocResult> {
+pub fn solve(input: String) -> Result<AocResult> {
     let parse = Instant::now();
     let vm = VM::file_parse(&input);
     let parse = parse.elapsed().as_secs_f64();

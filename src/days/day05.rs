@@ -4,7 +4,7 @@ use std::cmp::max;
 use std::time::Instant;
 
 #[aoc("953", "615")]
-pub fn day05(input: String) -> Result<AocResult> {
+pub fn solve(input: String) -> Result<AocResult> {
     let parse = Instant::now();
     let lines: Vec<_> = input.lines().collect();
 

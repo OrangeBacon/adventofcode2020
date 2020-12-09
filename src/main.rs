@@ -18,7 +18,7 @@ use days::SOLUTIONS;
 /// if path is none, then the default data is used, otherwise reads from path
 fn get_data(solution: usize, path: Option<&str>) -> String {
     if path.is_none() {
-        return SOLUTIONS[solution].file.to_string();
+        return SOLUTIONS[solution]().file.to_string();
     }
 
     let path = path.unwrap();
@@ -32,17 +32,19 @@ fn get_data(solution: usize, path: Option<&str>) -> String {
 /// runs a solution with a given index and input data
 /// if debug is true, then timing infomation is printed out about the
 /// solution, otherwise just the answers are printed
-fn run_solution(solution: usize, path: Option<&str>, debug: bool) {
+fn run_solution(sol_index: usize, path: Option<&str>, debug: bool) {
+    let sol = SOLUTIONS[sol_index]();
+
     if debug {
-        println!("Running day {}", solution + 1);
+        println!("Running {}", sol.name);
     } else {
-        print!("Day {}: ", solution + 1);
+        print!("{}: ", sol.name);
     }
 
-    let file_data = get_data(solution, path);
+    let file_data = get_data(sol_index, path);
 
     let now = Instant::now();
-    let res = SOLUTIONS[solution].run(file_data);
+    let res = sol.run(file_data);
     let end = now.elapsed().as_secs_f64();
 
     match res {

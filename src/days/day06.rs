@@ -6,7 +6,7 @@ use std::iter::FromIterator;
 use std::time::Instant;
 
 #[aoc("7283", "3520")]
-pub fn day06(input: String) -> Result<AocResult> {
+pub fn solve(input: String) -> Result<AocResult> {
     let parse = Instant::now();
 
     let line = Regex::new(r"(\r?\n){2}")?;

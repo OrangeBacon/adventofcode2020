@@ -4,7 +4,7 @@ use regex::Regex;
 use std::time::Instant;
 
 #[aoc("483", "482")]
-pub fn day02(input: String) -> Result<AocResult> {
+pub fn solve(input: String) -> Result<AocResult> {
     let parse = Instant::now();
 
     let lines = input.lines();
