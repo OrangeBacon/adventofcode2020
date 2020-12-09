@@ -5,9 +5,6 @@ authors = ["OrangeBacon <computer.backup.15@gmail.com>"]
 edition = "2018"
 publish = false
 
-[lib]
-name = "libaoc"
-
 [dependencies]
 clap = "~2.33"
 strfmt = "0.1.6"
@@ -15,3 +12,9 @@ regex = "1"
 hashbrown = "0.9"
 anyhow = "1"
 itertools = "0.9"
+libaoc = {path = "libaoc"}
+
+[workspace]
+members = [
+    "libaoc"
+]

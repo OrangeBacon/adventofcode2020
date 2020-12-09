@@ -1,4 +1,4 @@
-use crate::AocResult;
+use libaoc::AocResult;
 use anyhow::Result;
 use regex::Regex;
 use std::time::Instant;

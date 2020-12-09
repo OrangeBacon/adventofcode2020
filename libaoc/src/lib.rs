@@ -5,8 +5,6 @@ use std::fmt;
 use std::string::ToString;
 use std::time::Instant;
 
-pub mod days;
-
 mod vm;
 pub use vm::*;
 
@@ -15,8 +13,8 @@ pub type Solution = fn(String) -> Result<AocResult>;
 
 /// generic result container for each day
 pub struct AocResult {
-    part1: String,
-    part2: String,
+    pub part1: String,
+    pub part2: String,
     parse_time: f64,
     part1_time: f64,
     part2_time: f64,
@@ -24,7 +22,7 @@ pub struct AocResult {
 
 impl AocResult {
     /// construct result from any valid types
-    fn new<T: ToString, R: ToString>(part1: T, part2: R, parse: f64, t1: f64, t2: f64) -> Self {
+    pub fn new<T: ToString, R: ToString>(part1: T, part2: R, parse: f64, t1: f64, t2: f64) -> Self {
         AocResult {
             part1: part1.to_string(),
             part2: part2.to_string(),

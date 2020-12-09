@@ -1,5 +1,5 @@
 use anyhow::Result;
-use crate::AocResult;
+use libaoc::AocResult;
 use std::time::Instant;
 use itertools::Itertools;
 

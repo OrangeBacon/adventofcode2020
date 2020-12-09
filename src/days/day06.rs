@@ -1,4 +1,4 @@
-use crate::{time, AocResult};
+use libaoc::{time, AocResult};
 use anyhow::Result;
 use hashbrown::HashSet;
 use std::iter::FromIterator;

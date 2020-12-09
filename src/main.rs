@@ -1,3 +1,5 @@
+#![feature(str_split_once)]
+
 use anyhow::{Error, Result};
 use regex::Regex;
 use std::collections::HashMap;
@@ -5,11 +7,11 @@ use std::fs;
 use std::ops::Range;
 use std::time::Instant;
 use strfmt::Format;
+use libaoc::FloatTime;
+use clap::clap_app;
 
-#[macro_use]
-extern crate clap;
-
-use libaoc::{days::*, FloatTime};
+mod days;
+use days::{DEFAULT_DATA, SOLUTIONS};
 
 /// gets the data to run a solution on
 /// takes the index of the solution that is being run

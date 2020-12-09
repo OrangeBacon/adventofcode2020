@@ -1,4 +1,4 @@
-use crate::{time, AocResult, Instruction, VM};
+use libaoc::{time, AocResult, Instruction, VM};
 use anyhow::Result;
 use std::time::Instant;
 
