@@ -3,7 +3,7 @@ use itertools::Itertools;
 use libaoc::{aoc, AocResult};
 use std::time::Instant;
 
-#[aoc]
+#[aoc("3199139634", "438559930")]
 pub fn day09(input: String) -> Result<AocResult> {
     let parse = Instant::now();
     let nums: Vec<_> = input.lines().map(|x| x.parse::<u64>().unwrap()).collect();
@@ -43,24 +43,4 @@ pub fn day09(input: String) -> Result<AocResult> {
     let t2 = t2.elapsed().as_secs_f64();
 
     Ok(AocResult::new(part1, part2, parse, t1, t2))
-}
-
-#[cfg(test)]
-mod test {
-    use crate::days::*;
-    use anyhow::Result;
-
-    #[test]
-    fn day09a() -> Result<()> {
-        let res = day09::day09(SOLUTIONS[8].file.to_string())?;
-        assert_eq!(res.part1, "3199139634");
-        Ok(())
-    }
-
-    #[test]
-    fn day09b() -> Result<()> {
-        let res = day09::day09(SOLUTIONS[8].file.to_string())?;
-        assert_eq!(res.part2, "438559930");
-        Ok(())
-    }
 }

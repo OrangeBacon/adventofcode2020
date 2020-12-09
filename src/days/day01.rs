@@ -2,7 +2,7 @@ use anyhow::Result;
 use libaoc::{aoc, AocResult};
 use std::time::Instant;
 
-#[aoc]
+#[aoc("964875", "158661360")]
 pub fn day01(input: String) -> Result<AocResult> {
     let parse = Instant::now();
 
@@ -40,24 +40,4 @@ pub fn day01(input: String) -> Result<AocResult> {
     let t2 = t2.elapsed().as_secs_f64();
 
     Ok(AocResult::new(part1, part2, parse, t1, t2))
-}
-
-#[cfg(test)]
-mod test {
-    use crate::days::*;
-    use anyhow::Result;
-
-    #[test]
-    fn day01a() -> Result<()> {
-        let res = day01::day01(SOLUTIONS[0].file.to_string())?;
-        assert_eq!(res.part1, "964875");
-        Ok(())
-    }
-
-    #[test]
-    fn day01b() -> Result<()> {
-        let res = day01::day01(SOLUTIONS[0].file.to_string())?;
-        assert_eq!(res.part2, "158661360");
-        Ok(())
-    }
 }

@@ -14,7 +14,7 @@ struct Bag {
 
 const TARGET: &str = "shiny gold";
 
-#[aoc]
+#[aoc("278", "45157")]
 pub fn day07(input: String) -> Result<AocResult> {
     let parse = Instant::now();
     let mut bags: HashMap<String, Rc<RefCell<Bag>>> = HashMap::new();
@@ -109,24 +109,4 @@ pub fn day07(input: String) -> Result<AocResult> {
     });
 
     Ok(AocResult::new(part1, part2, parse, t1, t2))
-}
-
-#[cfg(test)]
-mod test {
-    use crate::days::*;
-    use anyhow::Result;
-
-    #[test]
-    fn day07a() -> Result<()> {
-        let res = day07::day07(SOLUTIONS[6].file.to_string())?;
-        assert_eq!(res.part1, "278");
-        Ok(())
-    }
-
-    #[test]
-    fn day07b() -> Result<()> {
-        let res = day07::day07(SOLUTIONS[6].file.to_string())?;
-        assert_eq!(res.part2, "45157");
-        Ok(())
-    }
 }

@@ -3,7 +3,7 @@ use libaoc::{aoc, AocResult};
 use regex::Regex;
 use std::time::Instant;
 
-#[aoc]
+#[aoc("483", "482")]
 pub fn day02(input: String) -> Result<AocResult> {
     let parse = Instant::now();
 
@@ -37,24 +37,4 @@ pub fn day02(input: String) -> Result<AocResult> {
     let time = time.elapsed().as_secs_f64();
 
     Ok(AocResult::new(part1, part2, parse, time, 0.0))
-}
-
-#[cfg(test)]
-mod test {
-    use crate::days::*;
-    use anyhow::Result;
-
-    #[test]
-    fn day02a() -> Result<()> {
-        let res = day02::day02(SOLUTIONS[1].file.to_string())?;
-        assert_eq!(res.part1, "483");
-        Ok(())
-    }
-
-    #[test]
-    fn day02b() -> Result<()> {
-        let res = day02::day02(SOLUTIONS[1].file.to_string())?;
-        assert_eq!(res.part2, "482");
-        Ok(())
-    }
 }

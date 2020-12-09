@@ -3,7 +3,7 @@ use libaoc::{aoc, time, AocResult};
 use std::cmp::max;
 use std::time::Instant;
 
-#[aoc]
+#[aoc("953", "615")]
 pub fn day05(input: String) -> Result<AocResult> {
     let parse = Instant::now();
     let lines: Vec<_> = input.lines().collect();
@@ -59,24 +59,4 @@ pub fn day05(input: String) -> Result<AocResult> {
     let t2 = t2.elapsed().as_secs_f64();
 
     Ok(AocResult::new(part1, part2, parse, t1, t2))
-}
-
-#[cfg(test)]
-mod test {
-    use crate::days::*;
-    use anyhow::Result;
-
-    #[test]
-    fn day05a() -> Result<()> {
-        let res = day05::day05(SOLUTIONS[4].file.to_string())?;
-        assert_eq!(res.part1, "953");
-        Ok(())
-    }
-
-    #[test]
-    fn day05b() -> Result<()> {
-        let res = day05::day05(SOLUTIONS[4].file.to_string())?;
-        assert_eq!(res.part2, "615");
-        Ok(())
-    }
 }
