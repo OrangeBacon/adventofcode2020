@@ -8,6 +8,7 @@ pub mod day05;
 pub mod day06;
 pub mod day07;
 pub mod day08;
+pub mod day09;
 
 /// function to run each day's problem
 pub const SOLUTIONS: &[Solution] = &[
@@ -19,6 +20,7 @@ pub const SOLUTIONS: &[Solution] = &[
     day06::day06,
     day07::day07,
     day08::day08,
+    day09::day09,
 ];
 
 /// list of all default test data
@@ -31,4 +33,5 @@ pub const DEFAULT_DATA: &[&str] = &[
     include_str!("../../data/day6.txt"),
     include_str!("../../data/day7.txt"),
     include_str!("../../data/day8.txt"),
+    include_str!("../../data/day9.txt"),
 ];
