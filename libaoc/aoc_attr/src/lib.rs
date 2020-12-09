@@ -48,7 +48,13 @@ pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
     let AocTestAttributes { part1, part2 } = parse_macro_input!(attr as AocTestAttributes);
 
     let name = format!("Day {} - {}", day_number, provided_name);
-    let file = format!("../../data/day{}.txt", day_number);
+
+    // use absolute path otherwise rustc breaks
+    let file = format!(
+        "{}/data/day{}.txt",
+        std::env::current_dir().unwrap().to_str().unwrap(),
+        day_number
+    );
     let day_index = LitInt::new(&(day_number - 1).to_string(), provided_name.span());
     let fn_name = format_ident!("day{:02}", day_number);
     let part1_name = format_ident!("day{:02}a", day_number);
