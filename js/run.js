@@ -1,8 +1,8 @@
 console.log((
-    m=process.hrtime.bigint,t=m(),f=i=>`js/day${i>8?i+1:"0"+(i+1)}.js`,
-    z=require("fs"),r=(x=Array(25).fill(0).map((_,i)=>[i+1,z.existsSync(f(i))])
-    .filter(([i,x])=>x).map(([x])=>x),p=process.argv,l=x.length-1,g=p.length,
-    s="Day number too ",g==2?[x[l]]:g!=3?"Too many args":p[2]=="all"?x:(n=+p[2]
-    ,isNaN(n)?s+"non-numeric":n>l+1?s+"large":n<1?s+"small":[n])),typeof r==
-    "string"?r:r.forEach(e=>eval(z.readFileSync(f(e-1),"utf-8"))),
-    (Number(m()-t)*1e-9).toFixed(7)+"s"))
+    M=process.hrtime.bigint,T=M(),F=I=>`js/day${I>8?I+1:"0"+(I+1)}.js`,
+    Z=require("fs"),R=(X=Array(25).fill(0).map((_,I)=>[I+1,Z.existsSync(F(I))])
+    .filter(([I,X])=>X).map(([X])=>X),P=process.argv,L=X.length-1,G=P.length,
+    S="Day number too ",G==2?[X[L]]:G!=3?"Too many args":P[2]=="all"?X:(N=+P[2]
+    ,isNaN(N)?S+"non-numeric":N>L+1?S+"large":N<1?S+"small":[N])),typeof R==
+    "string"?R:R.forEach(E=>eval(Z.readFileSync(F(E-1),"utf-8"))),
+    (Number(M()-T)*1e-9).toFixed(7)+"s"))
