@@ -42,7 +42,7 @@ fn advance(input: &Vec<Vec<Postion>>, output: &mut Vec<Vec<Postion>>, any_dist: 
             if seat == Floor {
                 output[y][x] = Floor;
             } else {
-                const offsets = &[
+                const OFFSETS: [(i32,i32);8] = [
                     (-1, -1),
                     (-1,  0),
                     (-1,  1),
@@ -53,7 +53,7 @@ fn advance(input: &Vec<Vec<Postion>>, output: &mut Vec<Vec<Postion>>, any_dist: 
                     (1,  1),
                 ];
                 let mut count = 0;
-                for off in offsets {
+                for off in &OFFSETS {
                     count += if get_seat(&input, w, h, x as i32, y as i32, off.0, off.1, any_dist) {1} else {0};
                     if seat == Occupied && count >= occ_count {
                         output[y][x] = Empty; continue 'next;
