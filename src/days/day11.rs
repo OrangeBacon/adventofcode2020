@@ -1,7 +1,6 @@
 use anyhow::Result;
 use libaoc::{aoc, AocResult};
 use std::time::Instant;
-use std::rc::Rc;
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 enum Postion {
@@ -11,12 +10,9 @@ enum Postion {
 }
 use Postion::*;
 
-fn get_seat(input: &Vec<Vec<Postion>>, x: usize, y: usize, x_off: i32, y_off: i32, any_dist: bool) -> bool {
-    let mut current_x = (x as i32) + x_off;
-    let mut current_y = (y as i32) + y_off;
-
-    let h = (input.len()-1) as i32;
-    let w = (input[0].len()-1) as i32;
+fn get_seat(input: &Vec<Vec<Postion>>, w: i32, h:i32, x: i32, y: i32, x_off: i32, y_off: i32, any_dist: bool) -> bool {
+    let mut current_x = x + x_off;
+    let mut current_y = y + y_off;
 
     let mut i = 0;
     let mut result = Empty;
@@ -36,52 +32,56 @@ fn get_seat(input: &Vec<Vec<Postion>>, x: usize, y: usize, x_off: i32, y_off: i3
     result == Occupied
 }
 
-fn advance(input: Vec<Vec<Postion>>, any_dist: bool, occ_count: i32) -> Vec<Vec<Postion>> {
-    let mut result = input.clone();
+fn advance(input: &Vec<Vec<Postion>>, output: &mut Vec<Vec<Postion>>, any_dist: bool, occ_count: i32) -> i32 {
+    let h = (input.len()-1) as i32;
+    let w = (input[0].len()-1) as i32;
+
+    let mut seats_occupied = 0;
     for (y, row) in input.iter().enumerate() {
-        for (x, &seat) in row.iter().enumerate() {
+        'next: for (x, &seat) in row.iter().enumerate() {
             if seat == Floor {
-                result[y][x] = Floor;
+                output[y][x] = Floor;
             } else {
-                let adj = vec![
-                    get_seat(&input, x, y, -1, -1, any_dist),
-                    get_seat(&input, x, y, -1,  0, any_dist),
-                    get_seat(&input, x, y, -1,  1, any_dist),
-                    get_seat(&input, x, y,  0, -1, any_dist),
-                    get_seat(&input, x, y,  0,  1, any_dist),
-                    get_seat(&input, x, y,  1, -1, any_dist),
-                    get_seat(&input, x, y,  1,  0, any_dist),
-                    get_seat(&input, x, y,  1,  1, any_dist),
+                const offsets = &[
+                    (-1, -1),
+                    (-1,  0),
+                    (-1,  1),
+                    (0, -1),
+                    (0,  1),
+                    (1, -1),
+                    (1,  0),
+                    (1,  1),
                 ];
-                let count = adj.iter().fold(0, |a,&x|if x{a+1}else{a});
+                let mut count = 0;
+                for off in offsets {
+                    count += if get_seat(&input, w, h, x as i32, y as i32, off.0, off.1, any_dist) {1} else {0};
+                    if seat == Occupied && count >= occ_count {
+                        output[y][x] = Empty; continue 'next;
+                    }
+                }
 
                 if seat == Empty && count == 0 {
-                    result[y][x] = Occupied;
-                } else if seat == Occupied && count >= occ_count {
-                    result[y][x] = Empty;
+                    output[y][x] = Occupied;
+                    seats_occupied += 1;
                 } else {
-                    result[y][x] = seat;
+                    output[y][x] = seat;
+                    if seat == Occupied {seats_occupied += 1}
                 }
             }
         }
     }
-    result
+    seats_occupied
 }
 
 fn iter_advance(initial_seats: &Vec<Vec<Postion>>, any_dist: bool, occ_count: i32) -> i32 {
-    let mut seats = Rc::new(initial_seats.to_vec());
+    let mut seats1 = initial_seats.to_vec().clone();
+    let mut seats2 = initial_seats.to_vec();
     let mut prev_count = 0;
     loop {
-        let new = Rc::new(advance(seats.to_vec(), any_dist, occ_count));
-        let mut count = 0;
-        for row in &*new {
-            for &seat in row {
-                if seat == Occupied {count += 1}
-            }
-        }
+        let count = advance(&seats1, &mut seats2, any_dist, occ_count);
         if prev_count == count {break;}
         prev_count = count;
-        seats = new;
+        (seats1, seats2) = (seats2, seats1);
     }
     prev_count
 }

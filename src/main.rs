@@ -1,4 +1,5 @@
 #![feature(str_split_once)]
+#![feature(destructuring_assignment)]
 
 use anyhow::{Error, Result};
 use clap::clap_app;
