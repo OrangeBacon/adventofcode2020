@@ -37,13 +37,13 @@ jobs:
     steps:
     - uses: actions/download-artifact@v2
       with:
-        path: ~/artifacts
-    - run: ls -la ~/artifacts/*
+        path: artifacts
+    - run: ls -la /artifacts/*
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          ~/artifacts/adventofcode2020-ubuntu/adventofcode2020
-          ~/artifacts/adventofcode2020-windows/adventofcode2020.exe
+          artifacts/adventofcode2020-ubuntu/adventofcode2020
+          artifacts/adventofcode2020-windows/adventofcode2020.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
