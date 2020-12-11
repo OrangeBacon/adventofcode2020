@@ -48,7 +48,7 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         path: ~/artifacts
-    - run: ls -la ~/artifacts
+    - run: ls -la ~/artifacts/*
     - name: Upload Linux
       uses: actions/upload-release-asset@v1
       env:
