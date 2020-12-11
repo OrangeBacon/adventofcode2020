@@ -35,35 +35,15 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
     - uses: actions/download-artifact@v2
       with:
         path: ~/artifacts
     - run: ls -la ~/artifacts/*
-    - name: Upload Ubuntu
-      uses: actions/upload-release-asset@v1
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ~/artifacts/adventofcode2020-ubuntu/adventofcode2020
+          ~/artifacts/adventofcode2020-windows/adventofcode2020.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ~/artifacts/adventofcode2020-ubuntu/adventofcode2020
-        asset_name: aoc2020-linux-x86_64
-        asset_content_type: application/octet-stream
-    - name: Upload Windows
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ~/artifacts/adventofcode2020-windows/adventofcode2020.exe
-        asset_name: aoc2020-windows-x86_64.exe
-        asset_content_type: application/octet-stream
