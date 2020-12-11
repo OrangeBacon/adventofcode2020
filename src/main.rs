@@ -3,30 +3,25 @@
 
 use anyhow::{Error, Result};
 use clap::clap_app;
-use libaoc::FloatTime;
+use libaoc::{get_solution, FloatTime, Solution};
+use linkme::distributed_slice;
 use regex::Regex;
-use std::collections::HashMap;
-use std::fs;
-use std::ops::Range;
-use std::time::Instant;
+use std::{collections::HashMap, fs, ops::Range, time::Instant};
 use strfmt::Format;
 
 mod days;
-use days::SOLUTIONS;
+
+#[distributed_slice]
+pub static SOLUTIONS: [Solution] = [..];
 
 /// gets the data to run a solution on
 /// takes the index of the solution that is being run
 /// if path is none, then the default data is used, otherwise reads from path
-fn get_data(solution: usize, path: Option<&str>) -> String {
+fn get_data(solution: usize, path: Option<&str>) -> Result<String> {
     if path.is_none() {
-        return SOLUTIONS[solution]().file.to_string();
-    }
-
-    let path = path.unwrap();
-
-    match fs::read_to_string(&path) {
-        Err(why) => panic!("Couldn't read file {}: {}", path, why),
-        Ok(f) => f,
+        Ok(get_solution(&*SOLUTIONS, solution)?.file.to_string())
+    } else {
+        Ok(fs::read_to_string(&path.unwrap())?)
     }
 }
 
@@ -34,15 +29,15 @@ fn get_data(solution: usize, path: Option<&str>) -> String {
 /// if debug is true, then timing infomation is printed out about the
 /// solution, otherwise just the answers are printed
 fn run_solution(sol_index: usize, path: Option<&str>, debug: bool) {
-    let sol = SOLUTIONS[sol_index]();
+    let sol = get_solution(&*SOLUTIONS, sol_index).expect(&format!("{}", sol_index));
 
     if debug {
-        println!("Running {}", sol.name);
+        println!("Running Day {} - {}", sol.number, sol.name);
     } else {
-        print!("{}: ", sol.name);
+        print!("Day {} {}: ", sol.number, sol.name);
     }
 
-    let file_data = get_data(sol_index, path);
+    let file_data = get_data(sol_index, path).unwrap();
 
     let now = Instant::now();
     let res = sol.run(file_data);
@@ -72,7 +67,7 @@ fn run_solution(sol_index: usize, path: Option<&str>, debug: bool) {
 /// returns the index into the solutions array
 fn parse_day_number(day: Option<&str>) -> Result<usize> {
     if day.is_none() {
-        return Ok(SOLUTIONS.len() - 1);
+        return Ok(SOLUTIONS.len());
     }
 
     let day = day.unwrap();
@@ -83,14 +78,16 @@ fn parse_day_number(day: Option<&str>) -> Result<usize> {
         }
     };
 
-    // days are one indexed, array isn't
-    let day_number = day_number - 1;
-    if day_number >= SOLUTIONS.len() {
+    if day_number > SOLUTIONS.len() {
         return Err(Error::msg(format!(
-            "day number passed doesn't exist: {}",
+            "Day number passed doesn't exist: {}",
             day_number
         )));
     };
+
+    if day_number == 0 {
+        return Err(Error::msg("Day 0 does not exist"));
+    }
 
     Ok(day_number)
 }
@@ -174,7 +171,7 @@ fn run_multiple(matches: &clap::ArgMatches) -> Result<()> {
             None
         } else {
             let mut args = HashMap::new();
-            args.insert("day".to_owned(), i + 1);
+            args.insert("day".to_owned(), i);
             Some(path_str.unwrap().format(&args)?)
         })
     }
@@ -184,7 +181,7 @@ fn run_multiple(matches: &clap::ArgMatches) -> Result<()> {
     // run all specified days
     for (i, &day) in to_run.iter().enumerate() {
         if day {
-            run_solution(i, paths[i].as_deref(), false);
+            run_solution(i + 1, paths[i].as_deref(), false);
         }
     }
 

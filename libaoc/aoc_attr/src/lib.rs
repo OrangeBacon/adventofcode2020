@@ -3,11 +3,10 @@
 extern crate proc_macro;
 
 use proc_macro::{Span, TokenStream};
-use proc_macro2::{Punct, Spacing};
 use quote::{format_ident, quote};
 use syn::{
     parse::{Parse, ParseStream, Result},
-    parse_macro_input, ItemFn, LitInt, LitStr, Token,
+    parse_macro_input, Ident, ItemFn, LitInt, LitStr, Token,
 };
 
 struct AocTestAttributes {
@@ -32,10 +31,8 @@ impl Parse for AocTestAttributes {
 #[proc_macro_attribute]
 pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
     // re-name the original function, so it can be replaced with a getter
-    let mut ast = parse_macro_input!(item as ItemFn);
+    let ast = parse_macro_input!(item as ItemFn);
     let provided_name = ast.sig.ident.clone();
-    let new_name = format_ident!("{}_run", provided_name);
-    ast.sig.ident = new_name.clone();
 
     // parse the file name into a day number
     let call_site = Span::call_site();
@@ -47,7 +44,7 @@ pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
     // parse the provided test results
     let AocTestAttributes { part1, part2 } = parse_macro_input!(attr as AocTestAttributes);
 
-    let name = format!("Day {} - {}", day_number, provided_name);
+    let name = provided_name.to_string();
 
     // use absolute path otherwise rustc breaks
     let file = format!(
@@ -55,40 +52,44 @@ pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
         std::env::current_dir().unwrap().to_str().unwrap(),
         day_number
     );
-    let day_index = LitInt::new(&(day_number - 1).to_string(), provided_name.span());
     let fn_name = format_ident!("day{:02}", day_number);
     let part1_name = format_ident!("day{:02}a", day_number);
     let part2_name = format_ident!("day{:02}b", day_number);
-    let hash = Punct::new('#', Spacing::Alone);
+    let day_number = LitInt::new(&day_number.to_string(), provided_name.span());
+
+    let append = Ident::new(
+        &provided_name.to_string().to_uppercase(),
+        provided_name.span(),
+    );
 
     let expanded = quote! {
-        pub fn #provided_name() -> libaoc::Solution {
-            libaoc::Solution {
-                name: #name,
-                run: #new_name,
-                file: include_str!(#file),
-            }
-        }
+        #[linkme::distributed_slice(crate::SOLUTIONS)]
+        static #append: libaoc::Solution = libaoc::Solution {
+            number: #day_number,
+            name: #name,
+            run: #provided_name,
+            file: include_str!(#file),
+        };
 
         #ast
 
-        #hash[cfg(test)]
+        #[cfg(test)]
         mod test {
             use crate::days::*;
             use anyhow::Result;
 
             #[test]
             fn #part1_name() -> Result<()> {
-                let res = #fn_name::#provided_name()
-                    .run(SOLUTIONS[#day_index]().file.to_string())?;
+                let solution = libaoc::get_solution(&*crate::SOLUTIONS, #day_number)?;
+                let res = #fn_name::#provided_name(solution.file.to_string())?;
                 assert_eq!(res.part1, #part1);
                 Ok(())
             }
 
             #[test]
             fn #part2_name() -> Result<()> {
-                let res = #fn_name::#provided_name()
-                    .run(SOLUTIONS[#day_index]().file.to_string())?;
+                let solution = libaoc::get_solution(&*crate::SOLUTIONS, #day_number)?;
+                let res = #fn_name::#provided_name(solution.file.to_string())?;
                 assert_eq!(res.part2, #part2);
                 Ok(())
             }

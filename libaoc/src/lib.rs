@@ -1,6 +1,6 @@
 #![feature(str_split_once)]
 
-use anyhow::Result;
+use anyhow::{Error, Result};
 use std::fmt;
 use std::string::ToString;
 use std::time::Instant;
@@ -11,8 +11,8 @@ pub use vm::*;
 pub use aoc_attr::aoc;
 
 /// type for each day's function, implemented by days/*.rs
-pub type SolutionGetter = fn() -> Solution;
 pub struct Solution {
+    pub number: usize,
     pub name: &'static str,
     pub run: fn(String) -> Result<AocResult>,
     pub file: &'static str,
@@ -21,6 +21,14 @@ pub struct Solution {
 impl Solution {
     pub fn run(&self, arg: String) -> Result<AocResult> {
         (self.run)(arg)
+    }
+}
+
+pub fn get_solution(solutions: &'static [Solution], day: usize) -> Result<&Solution> {
+    if let Some(sol) = solutions.iter().find(|&x| x.number == day) {
+        Ok(sol)
+    } else {
+        Err(Error::msg("Could not find solution"))
     }
 }
 
