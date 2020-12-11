@@ -48,6 +48,7 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         path: ~/artifacts
+    - run: ls -la ~/artifacts/*
     - name: Upload Ubuntu
       uses: actions/upload-release-asset@v1
       env:
