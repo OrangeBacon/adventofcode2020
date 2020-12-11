@@ -38,7 +38,6 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         path: artifacts
-    - run: ls -la /artifacts/*
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
