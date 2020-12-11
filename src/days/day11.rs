@@ -86,7 +86,7 @@ fn iter_advance(initial_seats: &Vec<Vec<Postion>>, any_dist: bool, occ_count: i3
     prev_count
 }
 
-#[aoc("", "")]
+#[aoc("2494", "2306")]
 pub fn solve(input: String) -> Result<AocResult> {
     let parse = Instant::now();
     let initial_seats: Vec<Vec<_>> = input.lines().map(|x|x.trim().chars().map(|x| {
