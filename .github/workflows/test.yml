@@ -11,8 +11,13 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  test:
+    name: Build ${{matrix.os}}
+    runs-on: ${{matrix.os}}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, windows]
 
     steps:
     - uses: actions/checkout@v2
@@ -26,14 +31,3 @@ jobs:
       with:
         command: test
         args: --release
-
-    - uses: actions-rs/toolchain@v1
-      with:
-        toolchain: nightly
-        target: x86_64-pc-windows-gnu
-        override: true
-    - uses: actions-rs/cargo@v1
-      with:
-        use-cross: true
-        command: test
-        args: --target x86_64-pc-windows-gnu --release
