@@ -28,7 +28,11 @@ pub fn get_solution(solutions: &'static [Solution], day: usize) -> Result<&Solut
     if let Some(sol) = solutions.iter().find(|&x| x.number == day) {
         Ok(sol)
     } else {
-        Err(Error::msg(format!("Could not find solution {}, {} solutions avaliable", day, solutions.len())))
+        Err(Error::msg(format!(
+            "Could not find solution {}, {} solutions avaliable",
+            day,
+            solutions.len()
+        )))
     }
 }
 
