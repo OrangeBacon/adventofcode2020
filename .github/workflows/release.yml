@@ -10,32 +10,31 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build ${{matrix.os}}
+    runs-on: ${{matrix.os}}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, windows]
 
     steps:
     - uses: actions/checkout@v2
-
     - uses: actions-rs/toolchain@v1
       with:
         toolchain: nightly
         override: true
         default: true
-    - uses: actions-rs/cargo@v1
+    - run: cargo build --release
+    - uses: actions/upload-artifact@v2
       with:
-        command: build
-        args: --release
+        name: adventofcode2020-${{matrix.os}}
+        path: target/release/adventofcode*
 
-    - uses: actions-rs/toolchain@v1
-      with:
-        toolchain: nightly
-        target: x86_64-pc-windows-gnu
-        override: true
-    - uses: actions-rs/cargo@v1
-      with:
-        use-cross: true
-        command: build
-        args: --target x86_64-pc-windows-gnu --release
-
+  release:
+    needs: build
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -46,23 +45,24 @@ jobs:
         release_name: Release ${{ github.ref }}
         draft: false
         prerelease: false
+    - uses: actions/download-artifact@v2
+      with:
+        path: ~/artifacts
     - name: Upload Linux
-      id: upload-linux
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: /home/runner/work/adventofcode2020/adventofcode2020/target/release/adventofcode2020
+        asset_path: ~/artifacts/adventofcode2020-linux
         asset_name: aoc2020-linux-x86_64
         asset_content_type: application/octet-stream
     - name: Upload Windows
-      id: upload-windows
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: /home/runner/work/adventofcode2020/adventofcode2020/target/x86_64-pc-windows-gnu/release/adventofcode2020.exe
+        asset_path: ~/artifacts/adventofcode2020-windows
         asset_name: aoc2020-windows-x86_64.exe
         asset_content_type: application/octet-stream
