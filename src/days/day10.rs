@@ -1,15 +1,12 @@
 use anyhow::Result;
-use libaoc::{aoc, AocResult};
-use std::time::Instant;
+use libaoc::{aoc, AocResult, Timer};
 
 #[aoc("1885", "2024782584832")]
-pub fn solve(input: String) -> Result<AocResult> {
-    let parse = Instant::now();
+pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
     let mut nums: Vec<_> = input.lines().map(|x| x.parse::<i64>().unwrap()).collect();
     nums.sort();
-    let parse = parse.elapsed().as_secs_f64();
+    timer.lap("Parse");
 
-    let t1 = Instant::now();
     let mut outlet = 0;
     let mut ones = 0;
     let mut threes = 1;
@@ -27,9 +24,7 @@ pub fn solve(input: String) -> Result<AocResult> {
     }
 
     let part1 = ones * threes;
-    let t1 = t1.elapsed().as_secs_f64();
-
-    let t2 = Instant::now();
+    timer.lap("Part 1");
 
     fn recurse(map: &mut [i64], options: &[Vec<usize>], idx: usize) -> i64 {
         let count = options[idx].iter().fold(0, |count, &new_idx| {
@@ -68,11 +63,11 @@ pub fn solve(input: String) -> Result<AocResult> {
         })
         .filter(|x| x.len() > 0)
         .collect();
+    timer.lap("Part 2 Collect Options");
 
     let mut memo = vec![0; options.len()];
     let part2 = recurse(&mut memo, &options, 0);
+    timer.lap("Part 2 Recurse");
 
-    let t2 = t2.elapsed().as_secs_f64();
-
-    Ok(AocResult::new(part1, part2, parse, t1, t2))
+    Ok(AocResult::new(part1, part2))
 }

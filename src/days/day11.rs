@@ -1,6 +1,5 @@
 use anyhow::Result;
-use libaoc::{aoc, AocResult};
-use std::time::Instant;
+use libaoc::{aoc, AocResult, Timer};
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 enum Postion {
@@ -116,8 +115,7 @@ fn iter_advance(initial_seats: &Vec<Vec<Postion>>, any_dist: bool, occ_count: i3
 }
 
 #[aoc("2494", "2306")]
-pub fn solve(input: String) -> Result<AocResult> {
-    let parse = Instant::now();
+pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
     let initial_seats: Vec<Vec<_>> = input
         .lines()
         .map(|x| {
@@ -131,15 +129,13 @@ pub fn solve(input: String) -> Result<AocResult> {
                 .collect()
         })
         .collect();
-    let parse = parse.elapsed().as_secs_f64();
+    timer.lap("Parse");
 
-    let t1 = Instant::now();
     let part1 = iter_advance(&initial_seats, false, 4);
-    let t1 = t1.elapsed().as_secs_f64();
+    timer.lap("Part 1");
 
-    let t2 = Instant::now();
     let part2 = iter_advance(&initial_seats, true, 5);
-    let t2 = t2.elapsed().as_secs_f64();
+    timer.lap("Part 2");
 
-    Ok(AocResult::new(part1, part2, parse, t1, t2))
+    Ok(AocResult::new(part1, part2))
 }

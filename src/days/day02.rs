@@ -1,18 +1,13 @@
 use anyhow::Result;
-use libaoc::{aoc, AocResult};
+use libaoc::{aoc, AocResult, Timer};
 use regex::Regex;
-use std::time::Instant;
 
 #[aoc("483", "482")]
-pub fn solve(input: String) -> Result<AocResult> {
-    let parse = Instant::now();
-
+pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
     let lines = input.lines();
     let extract = Regex::new(r"(\d+)-(\d+) (.): (.+)")?;
 
-    let parse = parse.elapsed().as_secs_f64();
-
-    let time = Instant::now();
+    timer.lap("Parse");
 
     let mut part1 = 0;
     let mut part2 = 0;
@@ -34,7 +29,8 @@ pub fn solve(input: String) -> Result<AocResult> {
             part2 += 1;
         }
     }
-    let time = time.elapsed().as_secs_f64();
 
-    Ok(AocResult::new(part1, part2, parse, time, 0.0))
+    timer.lap("Parts 1 + 2");
+
+    Ok(AocResult::new(part1, part2))
 }

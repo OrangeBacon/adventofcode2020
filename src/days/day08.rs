@@ -1,19 +1,17 @@
 use anyhow::Result;
-use libaoc::{aoc, time, AocResult, Instruction, VM};
-use std::time::Instant;
+use libaoc::{aoc, AocResult, Instruction, Timer, VM};
 
 #[aoc("1915", "944")]
-pub fn solve(input: String) -> Result<AocResult> {
-    let parse = Instant::now();
+pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
     let vm = VM::file_parse(&input);
-    let parse = parse.elapsed().as_secs_f64();
+    timer.lap("Parse");
 
-    let (part1, t1) = time(|| match vm.clone().run() {
+    let part1 = match vm.clone().run() {
         Ok(a) => a,
         Err(a) => a,
-    });
+    };
+    timer.lap("Part 1");
 
-    let t2 = Instant::now();
     let mut part2 = 0;
     let mut fixed_stream: Vec<_> = vm.into_iter().collect();
     for (i, inst) in vm.into_iter().enumerate() {
@@ -32,7 +30,7 @@ pub fn solve(input: String) -> Result<AocResult> {
 
         fixed_stream[i] = inst;
     }
-    let t2 = t2.elapsed().as_secs_f64();
+    timer.lap("Part 2");
 
-    Ok(AocResult::new(part1, part2, parse, t1, t2))
+    Ok(AocResult::new(part1, part2))
 }

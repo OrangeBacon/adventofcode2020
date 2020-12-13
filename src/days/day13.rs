@@ -1,10 +1,8 @@
 use anyhow::Result;
-use libaoc::{aoc, AocResult};
-use std::time::Instant;
+use libaoc::{aoc, AocResult, Timer};
 
 #[aoc("3215", "1001569619313439")]
-pub fn solve(input: String) -> Result<AocResult> {
-    let parse = Instant::now();
+pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
     let lines: Vec<_> = input.lines().collect();
     let secs: usize = lines[0].parse().unwrap();
     let buses: Vec<usize> = lines[1]
@@ -13,7 +11,8 @@ pub fn solve(input: String) -> Result<AocResult> {
         .filter(|x| x.is_ok())
         .map(|x| x.unwrap())
         .collect();
-    let all_buses: Vec<Option<(usize, usize)>> = lines[1]
+    timer.lap("Parse part 1");
+    let mut all_buses: Vec<Option<(usize, usize)>> = lines[1]
         .split(',')
         .map(|x| x.parse())
         .enumerate()
@@ -25,9 +24,10 @@ pub fn solve(input: String) -> Result<AocResult> {
             }
         })
         .collect();
-    let parse = parse.elapsed().as_secs_f64();
+    all_buses.sort();
+    all_buses.reverse();
+    timer.lap("Parse part 2");
 
-    let t1 = Instant::now();
     let mut current = secs;
     loop {
         if buses.iter().any(|x| current % x == 0) {
@@ -36,10 +36,8 @@ pub fn solve(input: String) -> Result<AocResult> {
         current += 1;
     }
     let part1 = (current - secs) * buses.iter().find(|&&x| current % x == 0).unwrap();
+    timer.lap("Part 1");
 
-    let t1 = t1.elapsed().as_secs_f64();
-
-    let t2 = Instant::now();
     let mut start = 0;
     let mut increment = 1;
     for bus in &all_buses {
@@ -63,8 +61,7 @@ pub fn solve(input: String) -> Result<AocResult> {
         }
     }
     let part2 = start;
+    timer.lap("Part 2");
 
-    let t2 = t2.elapsed().as_secs_f64();
-
-    Ok(AocResult::new(part1, part2, parse, t1, t2))
+    Ok(AocResult::new(part1, part2))
 }

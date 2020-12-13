@@ -3,10 +3,12 @@
 use anyhow::{Error, Result};
 use std::fmt;
 use std::string::ToString;
-use std::time::Instant;
 
 mod vm;
 pub use vm::*;
+
+mod timer;
+pub use timer::*;
 
 pub use aoc_attr::aoc;
 
@@ -14,13 +16,13 @@ pub use aoc_attr::aoc;
 pub struct Solution {
     pub number: usize,
     pub name: &'static str,
-    pub run: fn(String) -> Result<AocResult>,
+    pub run: fn(&mut Timer, String) -> Result<AocResult>,
     pub file: &'static str,
 }
 
 impl Solution {
-    pub fn run(&self, arg: String) -> Result<AocResult> {
-        (self.run)(arg)
+    pub fn run(&self, timer: &mut timer::Timer, arg: String) -> Result<AocResult> {
+        (self.run)(timer, arg)
     }
 }
 
@@ -40,20 +42,14 @@ pub fn get_solution(solutions: &'static [Solution], day: usize) -> Result<&Solut
 pub struct AocResult {
     pub part1: String,
     pub part2: String,
-    parse_time: f64,
-    part1_time: f64,
-    part2_time: f64,
 }
 
 impl AocResult {
     /// construct result from any valid types
-    pub fn new<T: ToString, R: ToString>(part1: T, part2: R, parse: f64, t1: f64, t2: f64) -> Self {
+    pub fn new<T: ToString, R: ToString>(part1: T, part2: R) -> Self {
         AocResult {
             part1: part1.to_string(),
             part2: part2.to_string(),
-            parse_time: parse,
-            part1_time: t1,
-            part2_time: t2,
         }
     }
 }
@@ -107,21 +103,6 @@ impl fmt::Debug for AocResult {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         writeln!(f, "Results:")?;
         writeln!(f, "  Part 1: {}", self.part1)?;
-        writeln!(f, "  Part 2: {}", self.part2)?;
-        writeln!(f, "Timing:")?;
-        writeln!(f, "  Parsing: {}", FloatTime::from(self.parse_time))?;
-        writeln!(f, "  Part 1: {}", FloatTime::from(self.part1_time))?;
-        writeln!(f, "  Part 2: {}", FloatTime::from(self.part2_time))
+        writeln!(f, "  Part 2: {}", self.part2)
     }
-}
-
-/// return the time taken to execute a function + the function's result
-pub fn time<F, T>(func: F) -> (T, f64)
-where
-    F: FnOnce() -> T,
-{
-    let time = Instant::now();
-    let res = func();
-    let time = time.elapsed().as_secs_f64();
-    (res, time)
 }

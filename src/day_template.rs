@@ -1,20 +1,16 @@
 use anyhow::Result;
-use libaoc::{aoc, AocResult};
-use std::time::Instant;
+use libaoc::{aoc, AocResult, Timer};
 
 #[aoc("", "")]
-pub fn solve(input: String) -> Result<AocResult> {
-    let parse = Instant::now();
+pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
 
-    let parse = parse.elapsed().as_secs_f64();
+    timer.lap("Parse");
 
-    let t1 = Instant::now();
 
-    let t1 = t1.elapsed().as_secs_f64();
+    timer.lap("Part 1");
 
-    let t2 = Instant::now();
 
-    let t2 = t2.elapsed().as_secs_f64();
+    timer.lap("Part 2");
 
-    Ok(AocResult::new("", "", parse, t1, t2))
+    Ok(AocResult::new("", ""))
 }

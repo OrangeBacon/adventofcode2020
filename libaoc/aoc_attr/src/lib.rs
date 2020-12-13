@@ -77,11 +77,13 @@ pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
         mod test {
             use crate::days::*;
             use anyhow::Result;
+            use libaoc::Timer;
 
             #[test]
             fn #part1_name() -> Result<()> {
                 let solution = libaoc::get_solution(&*crate::SOLUTIONS, #day_number)?;
-                let res = #fn_name::#provided_name(solution.file.to_string())?;
+                let mut timer = Timer::new();
+                let res = #fn_name::#provided_name(&mut timer, solution.file.to_string())?;
                 assert_eq!(res.part1, #part1);
                 Ok(())
             }
@@ -89,7 +91,8 @@ pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
             #[test]
             fn #part2_name() -> Result<()> {
                 let solution = libaoc::get_solution(&*crate::SOLUTIONS, #day_number)?;
-                let res = #fn_name::#provided_name(solution.file.to_string())?;
+                let mut timer = Timer::new();
+                let res = #fn_name::#provided_name(&mut timer, solution.file.to_string())?;
                 assert_eq!(res.part2, #part2);
                 Ok(())
             }

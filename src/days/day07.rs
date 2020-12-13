@@ -1,10 +1,9 @@
 use anyhow::Result;
 use hashbrown::HashMap;
-use libaoc::{aoc, time, AocResult};
+use libaoc::{aoc, AocResult, Timer};
 use regex::Regex;
 use std::cell::RefCell;
 use std::rc::Rc;
-use std::time::Instant;
 
 #[derive(Debug, Clone)]
 struct Bag {
@@ -15,8 +14,7 @@ struct Bag {
 const TARGET: &str = "shiny gold";
 
 #[aoc("278", "45157")]
-pub fn solve(input: String) -> Result<AocResult> {
-    let parse = Instant::now();
+pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
     let mut bags: HashMap<String, Rc<RefCell<Bag>>> = HashMap::new();
 
     let input: Vec<Vec<_>> = input
@@ -90,23 +88,21 @@ pub fn solve(input: String) -> Result<AocResult> {
         })
     }
 
-    let parse = parse.elapsed().as_secs_f64();
+    timer.lap("Parse");
 
-    let (part1, t1) = time(|| {
-        bags.iter().fold(0, |acc, (_, bag)| {
-            if find_recurse(bag.clone()) {
-                acc + 1
-            } else {
-                acc
-            }
-        })
+    let part1 = bags.iter().fold(0, |acc, (_, bag)| {
+        if find_recurse(bag.clone()) {
+            acc + 1
+        } else {
+            acc
+        }
     });
+    timer.lap("Part 1");
 
-    let (part2, t2) = time(|| {
-        count_recurse(Rc::new(RefCell::new(
-            bags.get(TARGET).unwrap().borrow().clone(),
-        ))) - 1
-    });
+    let part2 = count_recurse(Rc::new(RefCell::new(
+        bags.get(TARGET).unwrap().borrow().clone(),
+    ))) - 1;
+    timer.lap("Part 2");
 
-    Ok(AocResult::new(part1, part2, parse, t1, t2))
+    Ok(AocResult::new(part1, part2))
 }

@@ -3,7 +3,7 @@
 
 use anyhow::{Error, Result};
 use clap::clap_app;
-use libaoc::{get_solution, FloatTime, Solution};
+use libaoc::{get_solution, FloatTime, Solution, Timer};
 use linkme::distributed_slice;
 use regex::Regex;
 use std::{collections::HashMap, fs, ops::Range, time::Instant};
@@ -32,32 +32,30 @@ fn run_solution(sol_index: usize, path: Option<&str>, debug: bool) {
     let sol = get_solution(&*SOLUTIONS, sol_index).expect(&format!("{}", sol_index));
 
     if debug {
-        println!("Running Day {} - {}", sol.number, sol.name);
+        println!("Running Day {} - {}\n", sol.number, sol.name);
     } else {
         print!("Day {} {}: ", sol.number, sol.name);
     }
 
     let file_data = get_data(sol_index, path).unwrap();
 
-    let now = Instant::now();
-    let res = sol.run(file_data);
-    let end = now.elapsed().as_secs_f64();
+    let mut timer = Timer::new();
+    let res = sol.run(&mut timer, file_data);
+    timer.stop();
 
     match res {
         Ok(val) => {
             if debug {
-                print!("{:#?}", val)
+                println!("{:#?}", val)
             } else {
-                print!("{}", val)
+                println!("{}", val)
             }
         }
         Err(err) => print!("{:#?}", err),
     }
 
     if debug {
-        println!("  Total: {}", FloatTime::from(end));
-    } else {
-        println!("");
+        println!("{:?}", timer);
     }
 }
 
