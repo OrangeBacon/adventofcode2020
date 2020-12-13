@@ -23,7 +23,7 @@ pub fn solve(input: String) -> Result<AocResult> {
             Instruction::Nop(arg) => fixed_stream[i] = Instruction::Jmp(arg),
         }
 
-        let vm = VM::new(fixed_stream.clone());
+        let vm = VM::new(&fixed_stream);
 
         if let Ok(acc) = vm.run() {
             part2 = acc;

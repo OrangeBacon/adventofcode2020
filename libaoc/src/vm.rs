@@ -71,14 +71,15 @@ impl VM {
         T: IntoIterator<Item = (&'b str, &'b str)>,
     {
         Self::new(
-            inst.into_iter()
+            &inst
+                .into_iter()
                 .map(|x| Instruction::new(x))
                 .collect::<Vec<_>>(),
         )
     }
 
     /// construct a virtual machine from a list of instructions
-    pub fn new(inst: Vec<Instruction>) -> Self {
+    pub fn new(inst: &[Instruction]) -> Self {
         VM {
             instructions: inst.iter().map(|&x| InstructionState::new(x)).collect(),
             acc: 0,
