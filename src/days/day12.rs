@@ -48,7 +48,7 @@ fn rotate(current: (i32, i32), left: bool, amount: i32) -> (i32, i32) {
     res
 }
 
-fn waypoint(left: bool, amount: i32, x: i32, y: i32) -> (i32, i32) {
+fn waypoint((x, y): (i32, i32), left: bool, amount: i32) -> (i32, i32) {
     let direction = rotate((1, 0), left, amount);
     match direction {
         (0, 1) => (-y, x),
@@ -56,6 +56,33 @@ fn waypoint(left: bool, amount: i32, x: i32, y: i32) -> (i32, i32) {
         (0, -1) => (y, -x),
         _ => panic!(),
     }
+}
+
+fn run(input: &[(Movement, i32)], is_waypoint: bool) -> i32 {
+    let mut pos = (0, 0);
+    let mut point = (1, 0);
+
+    let func = if is_waypoint { waypoint } else { rotate };
+
+    for (code, count) in input {
+        match code {
+            North if is_waypoint => point.1 += count,
+            South if is_waypoint => point.1 -= count,
+            East if is_waypoint => point.0 += count,
+            West if is_waypoint => point.0 -= count,
+            North => pos.1 += count,
+            South => pos.1 -= count,
+            East => pos.0 += count,
+            West => pos.0 -= count,
+            Left => point = func(point, true, count / 90),
+            Right => point = func(point, false, count / 90),
+            Forward => {
+                pos.0 += count * point.0;
+                pos.1 += count * point.1;
+            }
+        }
+    }
+    pos.0.abs() + pos.1.abs()
 }
 
 #[aoc("2297", "89984")]
@@ -74,46 +101,11 @@ pub fn solve(input: String) -> Result<AocResult> {
     let parse = parse.elapsed().as_secs_f64();
 
     let t1 = Instant::now();
-    let mut x = 0;
-    let mut y = 0;
-    let mut direction = (1, 0);
-    for (code, count) in &input {
-        match code {
-            North => y += count,
-            South => y -= count,
-            East => x += count,
-            West => x -= count,
-            Left => direction = rotate(direction, true, count / 90),
-            Right => direction = rotate(direction, false, count / 90),
-            Forward => {
-                x += count * direction.0;
-                y += count * direction.1;
-            }
-        }
-    }
-    let part1 = x.abs() + y.abs();
+    let part1 = run(&input, false);
     let t1 = t1.elapsed().as_secs_f64();
 
     let t2 = Instant::now();
-    let mut x = 0;
-    let mut y = 0;
-    let mut waypoint_x = 10;
-    let mut waypoint_y = 1;
-    for (code, count) in input {
-        match code {
-            North => waypoint_y += count,
-            South => waypoint_y -= count,
-            East => waypoint_x += count,
-            West => waypoint_x -= count,
-            Left => (waypoint_x, waypoint_y) = waypoint(true, count / 90, waypoint_x, waypoint_y),
-            Right => (waypoint_x, waypoint_y) = waypoint(false, count / 90, waypoint_x, waypoint_y),
-            Forward => {
-                x += waypoint_x * count;
-                y += waypoint_y * count;
-            }
-        }
-    }
-    let part2 = x.abs() + y.abs();
+    let part2 = run(&input, true);
     let t2 = t2.elapsed().as_secs_f64();
 
     Ok(AocResult::new(part1, part2, parse, t1, t2))
