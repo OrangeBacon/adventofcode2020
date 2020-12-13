@@ -1,0 +1,10 @@
+console.log(
+    require("fs").readFileSync("data/day11.txt","utf-8").trim().split("\n").map
+    (x=>x.trim().split('').map(x=>x!='.')).reduce((a,b,c,d)=>[d,d]).map((l,i)=>
+    (f=i==1,j=JSON,i=j.parse(j.stringify(l)),h=0,(k=()=>(o=0,p=[],i.forEach((_,
+    y)=>(p.push([]),i[0].forEach((_,x)=>(m=p[y],s=i[y][x])?(e=0,n=-1,!([[n,n],
+    [n,0],[n,1],[0,n],[0,1],[1,n],[1,0],[1,1]].some(([c,d])=>((a=x+c,b=y+d,j=0,
+    r=1,Array(100).fill(0).some(()=>((j++>0&&!f)|a<0|a>=i[0].length|b<0|b>=i.
+    length)?1:(t=i[b][a],t?(r=t,1):(a+=c,b+=d,0))),r==2)?e+=1:0,s==2&&e>=(f?5:4)
+    ?(m[x]=1,1):0)))?((s==1&&e==0)?(m[x]=2,o++):(m[x]=s,s==2?o++:0)):0):m[x]=0
+    ))),h==o?0:(h=o,i=p,k())))(),h)))
