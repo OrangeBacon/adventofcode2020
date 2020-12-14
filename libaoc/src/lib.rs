@@ -1,8 +1,7 @@
 #![feature(str_split_once)]
 
 use anyhow::{Error, Result};
-use std::fmt;
-use std::string::ToString;
+use std::{cmp::max, fmt, string::ToString};
 
 mod vm;
 pub use vm::*;
@@ -40,16 +39,20 @@ pub fn get_solution(solutions: &'static [Solution], day: usize) -> Result<&Solut
 
 /// generic result container for each day
 pub struct AocResult {
-    pub part1: String,
-    pub part2: String,
+    results: Vec<(&'static str, String)>,
 }
 
 impl AocResult {
     /// construct result from any valid types
     pub fn new<T: ToString, R: ToString>(part1: T, part2: R) -> Self {
         AocResult {
-            part1: part1.to_string(),
-            part2: part2.to_string(),
+            results: vec![("Part 1", part1.to_string()), ("Part 2", part2.to_string())],
+        }
+    }
+
+    pub fn from(results: &[(&'static str, String)]) -> Self {
+        AocResult {
+            results: results.to_vec()
         }
     }
 }
@@ -95,14 +98,35 @@ impl fmt::Display for FloatTime {
 
 impl fmt::Display for AocResult {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        write!(f, "{}, {}", self.part1, self.part2)
+        for (i, result) in self.results.iter().enumerate() {
+            if i > 0 {
+                write!(f, ", ")?;
+            }
+            write!(f, "{}", result.1)?;
+        }
+        Ok(())
     }
 }
 
 impl fmt::Debug for AocResult {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         writeln!(f, "Results:")?;
-        writeln!(f, "  Part 1: {}", self.part1)?;
-        writeln!(f, "  Part 2: {}", self.part2)
+
+        let width = self
+            .results
+            .iter()
+            .fold(0, |acc, (name, _)| max(acc, name.len()))
+            + 1;
+
+        for (name, result) in &self.results {
+            writeln!(
+                f,
+                "  {:<width$} {}",
+                format!("{}:", name),
+                result,
+                width = width
+            )?;
+        }
+        Ok(())
     }
 }
