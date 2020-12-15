@@ -39,7 +39,7 @@ pub fn get_solution(solutions: &'static [Solution], day: usize) -> Result<&Solut
 
 /// generic result container for each day
 pub struct AocResult {
-    results: Vec<(&'static str, String)>,
+    pub results: Vec<(&'static str, String)>,
 }
 
 impl AocResult {

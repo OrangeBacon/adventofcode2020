@@ -84,7 +84,7 @@ pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
                 let solution = libaoc::get_solution(&*crate::SOLUTIONS, #day_number)?;
                 let mut timer = Timer::new();
                 let res = #fn_name::#provided_name(&mut timer, solution.file.to_string())?;
-                assert_eq!(res.part1, #part1);
+                assert_eq!(res.results[0].1, #part1);
                 Ok(())
             }
 
@@ -93,7 +93,7 @@ pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
                 let solution = libaoc::get_solution(&*crate::SOLUTIONS, #day_number)?;
                 let mut timer = Timer::new();
                 let res = #fn_name::#provided_name(&mut timer, solution.file.to_string())?;
-                assert_eq!(res.part2, #part2);
+                assert_eq!(res.results[1].1, #part2);
                 Ok(())
             }
         }
