@@ -1,6 +1,6 @@
 #![feature(str_split_once)]
 
-use anyhow::{Error, Result};
+use anyhow::{Result, anyhow};
 use std::{cmp::max, fmt, string::ToString};
 
 mod vm;
@@ -19,21 +19,27 @@ pub struct Solution {
     pub file: &'static str,
 }
 
+impl PartialEq for Solution {
+    fn eq(&self, a: &Solution) -> bool {
+        if self.number != a.number {return false}
+        if self.name != a.name {return false}
+        true
+    }
+}
+
 impl Solution {
     pub fn run(&self, timer: &mut timer::Timer, arg: String) -> Result<AocResult> {
         (self.run)(timer, arg)
     }
-}
 
-pub fn get_solution(solutions: &'static [Solution], day: usize) -> Result<&Solution> {
-    if let Some(sol) = solutions.iter().find(|&x| x.number == day) {
-        Ok(sol)
-    } else {
-        Err(Error::msg(format!(
-            "Could not find solution {}, {} solutions avaliable",
-            day,
-            solutions.len()
-        )))
+    pub fn get(solutions: &'static [Solution], day: usize, name: &str) -> Result<&'static Solution> {
+        solutions.iter().find(|&x| x.number == day && x.name == name).ok_or(anyhow!("Could not find solution"))
+    }
+
+    pub fn latest_day(solutions: &'static [Solution]) -> usize {
+        solutions
+            .iter()
+            .fold(0, |acc, x| std::cmp::max(acc, x.number))
     }
 }
 
@@ -52,7 +58,7 @@ impl AocResult {
 
     pub fn from(results: &[(&'static str, String)]) -> Self {
         AocResult {
-            results: results.to_vec()
+            results: results.to_vec(),
         }
     }
 }
