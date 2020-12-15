@@ -3,7 +3,7 @@ use libaoc::{aoc, AocResult, Timer};
 use regex::Regex;
 
 #[aoc("483", "482")]
-pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
+pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     let lines = input.lines();
     let extract = Regex::new(r"(\d+)-(\d+) (.): (.+)")?;
 

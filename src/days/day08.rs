@@ -2,7 +2,7 @@ use anyhow::Result;
 use libaoc::{aoc, AocResult, Instruction, Timer, VM};
 
 #[aoc("1915", "944")]
-pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
+pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     let vm = VM::file_parse(&input);
     timer.lap("Parse");
 

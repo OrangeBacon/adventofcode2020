@@ -14,7 +14,7 @@ struct Bag {
 const TARGET: &str = "shiny gold";
 
 #[aoc("278", "45157")]
-pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
+pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     let mut bags: HashMap<String, Rc<RefCell<Bag>>> = HashMap::new();
 
     let input: Vec<Vec<_>> = input

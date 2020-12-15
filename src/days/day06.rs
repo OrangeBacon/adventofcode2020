@@ -4,7 +4,7 @@ use libaoc::{aoc, AocResult, Timer};
 use regex::Regex;
 
 #[aoc("7283", "3520")]
-pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
+pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     let line = Regex::new(r"(\r?\n){2}")?;
 
     let chars1 = line

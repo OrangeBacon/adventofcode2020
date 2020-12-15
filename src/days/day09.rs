@@ -4,7 +4,7 @@ use libaoc::{aoc, AocResult, Timer};
 use std::cmp::Ordering;
 
 #[aoc("3199139634", "438559930")]
-pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
+pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     let nums: Vec<_> = input.lines().map(|x| x.parse::<u64>().unwrap()).collect();
     timer.lap("Parse");
 

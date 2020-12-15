@@ -2,7 +2,7 @@ use anyhow::Result;
 use libaoc::{aoc, AocResult, Timer};
 
 #[aoc("964875", "158661360")]
-pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
+pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     let nums = input
         .split_whitespace()
         .map(|x| x.parse::<i32>())

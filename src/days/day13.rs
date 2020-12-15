@@ -2,7 +2,7 @@ use anyhow::Result;
 use libaoc::{aoc, AocResult, Timer};
 
 #[aoc("3215", "1001569619313439")]
-pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
+pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     let lines: Vec<_> = input.lines().collect();
     let secs: usize = lines[0].parse().unwrap();
     let buses: Vec<usize> = lines[1]

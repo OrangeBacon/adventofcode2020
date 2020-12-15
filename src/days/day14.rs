@@ -11,7 +11,7 @@ enum Command {
 use Command::*;
 
 #[aoc("11501064782628", "5142195937660")]
-pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
+pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     let mem_reg = Regex::new(r"mem\[(\d+)\] = (\d+)")?;
     let mask_reg = Regex::new(r"mask = ([X01]+)")?;
 

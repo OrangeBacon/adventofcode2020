@@ -58,7 +58,7 @@ fn waypoint(left: bool, amount: i32, x: i32, y: i32) -> (i32, i32) {
 }
 
 #[aoc("2297", "89984")]
-pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
+pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     let input: Vec<_> = input
         .trim()
         .lines()

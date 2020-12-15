@@ -15,8 +15,7 @@ pub use aoc_attr::aoc;
 pub struct Solution {
     pub number: usize,
     pub name: &'static str,
-    pub run: fn(&mut Timer, String) -> Result<AocResult>,
-    pub file: &'static str,
+    pub run: fn(&mut Timer, &str) -> Result<AocResult>,
 }
 
 impl PartialEq for Solution {
@@ -32,7 +31,7 @@ impl PartialEq for Solution {
 }
 
 impl Solution {
-    pub fn run(&self, timer: &mut timer::Timer, arg: String) -> Result<AocResult> {
+    pub fn run(&self, timer: &mut timer::Timer, arg: &str) -> Result<AocResult> {
         (self.run)(timer, arg)
     }
 
@@ -51,6 +50,21 @@ impl Solution {
         solutions
             .iter()
             .fold(0, |acc, x| std::cmp::max(acc, x.number))
+    }
+}
+
+pub struct AocFile {
+    pub number: usize,
+    pub data: &'static str,
+}
+
+impl AocFile {
+    pub fn get(files: &'static [AocFile], day: usize) -> Result<&'static str> {
+        files
+            .iter()
+            .find(|&x| x.number == day)
+            .ok_or_else(|| anyhow!("Could not find solution"))
+            .map(|x| x.data)
     }
 }
 

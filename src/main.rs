@@ -4,7 +4,7 @@
 
 use anyhow::Result;
 use clap::{App, Arg, ArgMatches};
-use libaoc::{FloatTime, Solution, Timer};
+use libaoc::{AocFile, FloatTime, Solution, Timer};
 use linkme::distributed_slice;
 use regex::Regex;
 use std::{error::Error, fmt, time::Instant};
@@ -16,6 +16,9 @@ mod days;
 /// the array of all code avaliable to run
 #[distributed_slice]
 pub static SOLUTIONS: [Solution] = [..];
+
+#[distributed_slice]
+pub static FILES: [AocFile] = [..];
 
 /// custom error type for the command line interface
 /// only exists so that multiple errors can be combined, so all errors
@@ -93,10 +96,10 @@ fn run_solution(solution: &Solution, debug: bool) {
         print!("Day {} {}: ", solution.number, solution.name);
     }
 
-    let file_data = solution.file;
+    let file_data = AocFile::get(&*FILES, solution.number).unwrap();
 
     let mut timer = Timer::new();
-    let res = solution.run(&mut timer, file_data.to_string());
+    let res = solution.run(&mut timer, file_data);
     timer.stop();
 
     match res {
@@ -107,7 +110,7 @@ fn run_solution(solution: &Solution, debug: bool) {
                 println!("{}", val)
             }
         }
-        Err(err) => print!("{:#?}", err),
+        Err(err) => println!("{:#?}", err),
     }
 
     if debug {

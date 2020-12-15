@@ -36,11 +36,15 @@ fn run(numbers_map: &mut [(i32, usize, usize)], numbers: &[usize], max: usize) -
     spoken
 }
 
-#[aoc("1015", "201")]
-pub fn solve(timer: &mut Timer, _input: String) -> Result<AocResult> {
-    let numbers = vec![19, 0, 5, 1, 10, 13];
-    let mut map1 = vec![(0, 0, 0); 2020];
-    let mut map2 = vec![(0, 0, 0); 30000000];
+#[aoc("1015", "201", "2020, 30000000, 19, 0, 5, 1, 10, 13")]
+pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
+    let numbers: Vec<_> = input
+        .split(',')
+        .map(|x| x.trim().parse())
+        .collect::<Result<_, _>>()?;
+    let mut map1 = vec![(0, 0, 0); numbers[0]];
+    let mut map2 = vec![(0, 0, 0); numbers[1]];
+    let numbers = &numbers[2..];
     timer.lap("Parse");
 
     let part1 = run(&mut map1, &numbers, 2020);

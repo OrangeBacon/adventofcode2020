@@ -12,6 +12,7 @@ use syn::{
 struct AocTestAttributes {
     part1: LitStr,
     part2: LitStr,
+    file: Option<LitStr>,
 }
 
 impl Parse for AocTestAttributes {
@@ -19,9 +20,14 @@ impl Parse for AocTestAttributes {
         let part1: LitStr = input.parse()?;
         input.parse::<Token!(,)>()?;
         let part2: LitStr = input.parse()?;
+        let file = match input.parse::<Token!(,)>() {
+            Ok(_) => Some(input.parse()?),
+            Err(_) => None,
+        };
         Ok(Self {
             part1: part1,
             part2: part2,
+            file: file,
         })
     }
 }
@@ -42,17 +48,22 @@ pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
     let day_number = nums.parse::<u32>().unwrap();
 
     // parse the provided test results
-    let AocTestAttributes { part1, part2 } = parse_macro_input!(attr as AocTestAttributes);
+    let AocTestAttributes { part1, part2, file } = syn::parse(attr).unwrap();
 
     let name = provided_name.to_string();
 
     // use absolute path otherwise rustc breaks
-    let file = format!(
-        "{}/data/day{}.txt",
-        std::env::current_dir().unwrap().to_str().unwrap(),
-        day_number
-    );
-    let fn_name = format_ident!("day{:02}", day_number);
+    let file = if let Some(file) = file {
+        quote! { #file }
+    } else {
+        let file_name = format!(
+            "{}/data/day{}.txt",
+            std::env::current_dir().unwrap().to_str().unwrap(),
+            day_number
+        );
+        quote! {include_str!(#file_name)}
+    };
+
     let part1_name = format_ident!("day{:02}a", day_number);
     let part2_name = format_ident!("day{:02}b", day_number);
     let day_number = LitInt::new(&day_number.to_string(), provided_name.span());
@@ -68,7 +79,12 @@ pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
             number: #day_number,
             name: #name,
             run: #provided_name,
-            file: include_str!(#file),
+        };
+
+        #[linkme::distributed_slice(crate::FILES)]
+        static FILE: libaoc::AocFile = libaoc::AocFile {
+            number: #day_number,
+            data: #file,
         };
 
         #ast
@@ -82,8 +98,9 @@ pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
             #[test]
             fn #part1_name() -> Result<()> {
                 let solution = libaoc::Solution::get(&*crate::SOLUTIONS, #day_number, "solve")?;
+                let file = libaoc::AocFile::get(&*crate::FILES, #day_number)?;
                 let mut timer = Timer::new();
-                let res = #fn_name::#provided_name(&mut timer, solution.file.to_string())?;
+                let res = solution.run(&mut timer, file)?;
                 assert_eq!(res.results[0].1, #part1);
                 Ok(())
             }
@@ -91,8 +108,9 @@ pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
             #[test]
             fn #part2_name() -> Result<()> {
                 let solution = libaoc::Solution::get(&*crate::SOLUTIONS, #day_number, "solve")?;
+                let file = libaoc::AocFile::get(&*crate::FILES, #day_number)?;
                 let mut timer = Timer::new();
-                let res = #fn_name::#provided_name(&mut timer, solution.file.to_string())?;
+                let res = solution.run(&mut timer, file)?;
                 assert_eq!(res.results[1].1, #part2);
                 Ok(())
             }

@@ -113,7 +113,7 @@ fn iter_advance(initial_seats: &[Vec<Postion>], any_dist: bool, occ_count: i32) 
 }
 
 #[aoc("2494", "2306")]
-pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
+pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     let initial_seats: Vec<Vec<_>> = input
         .lines()
         .map(|x| {

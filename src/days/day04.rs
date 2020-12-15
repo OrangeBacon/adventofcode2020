@@ -3,7 +3,7 @@ use libaoc::{aoc, AocResult, Timer};
 use regex::Regex;
 
 #[aoc("228", "175")]
-pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
+pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     let line = Regex::new(r"(\r?\n){2}")?;
 
     let datas: Vec<Vec<Vec<_>>> = line

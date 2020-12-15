@@ -2,7 +2,7 @@ use anyhow::Result;
 use libaoc::{aoc, AocResult, Timer};
 
 #[aoc("1885", "2024782584832")]
-pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
+pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     let mut nums: Vec<_> = input.lines().map(|x| x.parse::<i64>().unwrap()).collect();
     nums.sort_unstable();
     timer.lap("Parse");

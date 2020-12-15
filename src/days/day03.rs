@@ -17,7 +17,7 @@ fn iter(lines: &[Vec<char>], depth: usize, height: usize) -> i32 {
 }
 
 #[aoc("254", "1666768320")]
-pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
+pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     let lines = input
         .lines()
         .map(|x| x.chars().collect::<Vec<_>>())

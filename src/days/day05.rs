@@ -3,7 +3,7 @@ use libaoc::{aoc, AocResult, Timer};
 use std::cmp::max;
 
 #[aoc("953", "615")]
-pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
+pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     let lines: Vec<_> = input.lines().collect();
     let mut seats = [[false; 8]; 128];
     timer.lap("Parse");
