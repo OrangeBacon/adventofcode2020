@@ -31,10 +31,16 @@ impl Timer {
     }
 }
 
+impl Default for Timer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl fmt::Debug for Timer {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         writeln!(f, "Timing:")?;
-        if self.laps.len() == 0 {
+        if self.laps.is_empty() {
             return writeln!(f, "  No timing infomation recieved");
         }
 

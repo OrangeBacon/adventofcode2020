@@ -1,7 +1,7 @@
 use anyhow::Result;
 use libaoc::{aoc, AocResult, Timer};
 
-fn iter(lines: &Vec<Vec<char>>, depth: usize, height: usize) -> i32 {
+fn iter(lines: &[Vec<char>], depth: usize, height: usize) -> i32 {
     let mut x = 0;
     let mut trees = 0;
     for (i, line) in lines.iter().enumerate() {

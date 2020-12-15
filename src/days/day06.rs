@@ -2,7 +2,6 @@ use anyhow::Result;
 use hashbrown::HashSet;
 use libaoc::{aoc, AocResult, Timer};
 use regex::Regex;
-use std::iter::FromIterator;
 
 #[aoc("7283", "3520")]
 pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
@@ -20,17 +19,15 @@ pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
     });
     timer.lap("Parse part 2");
 
-    let part1 = chars1.fold(0, |acc, group| {
-        HashSet::<char>::from_iter(group).len() + acc
-    });
+    let part1 = chars1.fold(0, |acc, group| group.collect::<HashSet<char>>().len() + acc);
     timer.lap("Part 1");
 
     let part2 = chars2.fold(0, |acc, group| {
         group
             .iter()
-            .map(|x| HashSet::from_iter(x.iter().map(|x| *x)))
+            .map(|x| x.iter().copied().collect())
             .fold(
-                HashSet::from_iter(group[0].iter().map(|x| *x)),
+                group[0].iter().copied().collect(),
                 |a, person: HashSet<char>| &a & &person,
             )
             .len()

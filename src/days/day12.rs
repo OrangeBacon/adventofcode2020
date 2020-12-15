@@ -64,7 +64,7 @@ pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
         .lines()
         .map(|x| {
             (
-                Movement::new(x.chars().nth(0).unwrap()),
+                Movement::new(x.chars().next().unwrap()),
                 x[1..].parse::<i32>().unwrap(),
             )
         })

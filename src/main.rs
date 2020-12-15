@@ -7,7 +7,7 @@ use clap::{App, Arg, ArgMatches};
 use libaoc::{FloatTime, Solution, Timer};
 use linkme::distributed_slice;
 use regex::Regex;
-use std::{time::Instant, fmt, error::Error};
+use std::{error::Error, fmt, time::Instant};
 
 /// not actually used, is just to tell the compiler to compile the days so that
 /// distributed slice can work properly
@@ -49,9 +49,7 @@ impl CliError {
                 res.push(e);
                 MultipleError(res)
             }
-            (e1, e2) => {
-                MultipleError(vec![e1, e2])
-            }
+            (e1, e2) => MultipleError(vec![e1, e2]),
         }
     }
 }
@@ -63,9 +61,16 @@ impl fmt::Display for CliError {
         use CliError::*;
 
         match self {
-            InvalidDayNumber(num, err) => write!(f, "- Invalid day number passed: `{}` - {}", num, err),
+            InvalidDayNumber(num, err) => {
+                write!(f, "- Invalid day number passed: `{}` - {}", num, err)
+            }
             NoDayZero => writeln!(f, "- Day 0 does not exist"),
-            DayOutOfRange(num) => writeln!(f, "- Day {} is too large, maximum is {}", num, Solution::latest_day(&SOLUTIONS)),
+            DayOutOfRange(num) => writeln!(
+                f,
+                "- Day {} is too large, maximum is {}",
+                num,
+                Solution::latest_day(&SOLUTIONS)
+            ),
             InvalidRange(e) => writeln!(f, "- Invalid range `{}`", e),
             BadArgument(e) => writeln!(f, "- Error: Could not find anything to run matching {}", e),
             MultipleError(e) => {
@@ -82,7 +87,6 @@ impl fmt::Display for CliError {
 /// if debug is true, then timing infomation is printed out about the
 /// solution, otherwise just the answers are printed
 fn run_solution(solution: &Solution, debug: bool) {
-
     if debug {
         println!("Running Day {} - {}\n", solution.number, solution.name);
     } else {
@@ -160,8 +164,8 @@ impl<'a> fmt::Display for ArgumentType<'a> {
 
         match self {
             Digit(a) => write!(f, "{}", a)?,
-            Range(a,b) => write!(f, "{}..{}", a, b)?,
-            Name(a) | File(a) => write!(f, "\"{}\"", a)?
+            Range(a, b) => write!(f, "{}..{}", a, b)?,
+            Name(a) | File(a) => write!(f, "\"{}\"", a)?,
         }
 
         Ok(())
@@ -209,7 +213,7 @@ fn get_solutions(argument: &ProcessedArgument) -> Option<Vec<&'static Solution>>
         }
     }
 
-    if solutions.len() == 0 {
+    if solutions.is_empty() {
         None
     } else {
         Some(solutions)
@@ -240,7 +244,7 @@ fn parse_day_range(value: &str) -> Result<Result<ArgumentType, CliError>, CliErr
             match (start, end) {
                 (Err(e1), Err(e2)) => Ok(Err(CliError::from(e1, e2))),
                 (Err(e), _) | (_, Err(e)) => Ok(Err(e)),
-                (Ok(a), Ok(b)) => Ok(Ok(ArgumentType::Range(a,b))),
+                (Ok(a), Ok(b)) => Ok(Ok(ArgumentType::Range(a, b))),
             }
         }
     }
@@ -249,7 +253,6 @@ fn parse_day_range(value: &str) -> Result<Result<ArgumentType, CliError>, CliErr
 /// takes the command line arguments from clap, gets the solutions that they
 /// represent and runs them.  Is essentially the main function
 fn interpret_arguments(arguments: ArgMatches) -> Result<(), CliError> {
-
     // the most recent day number, used in default values
     let latest_day = ArgumentType::Digit(Solution::latest_day(&SOLUTIONS));
 
@@ -262,23 +265,21 @@ fn interpret_arguments(arguments: ArgMatches) -> Result<(), CliError> {
 
         // the indicies are included so the -f flag inputs can be sorted into
         // an array with the day numbers correctly
-        let values = values
-            .zip(indicies)
-            .map(|(arg, index)| {
-                if let Ok(num) = parse_day_number(Some(arg)) {
-                    match num {
-                        Ok(a) => Ok((index, ArgumentType::Digit(a))),
-                        Err(e) => Err(e),
-                    }
-                } else if let Ok(arg) = parse_day_range(arg) {
-                    match arg {
-                        Ok(a) => Ok((index, a)),
-                        Err(e) => Err(e),
-                    }
-                } else {
-                    Ok((index, ArgumentType::Name(arg)))
+        let values = values.zip(indicies).map(|(arg, index)| {
+            if let Ok(num) = parse_day_number(Some(arg)) {
+                match num {
+                    Ok(a) => Ok((index, ArgumentType::Digit(a))),
+                    Err(e) => Err(e),
                 }
-            });
+            } else if let Ok(arg) = parse_day_range(arg) {
+                match arg {
+                    Ok(a) => Ok((index, a)),
+                    Err(e) => Err(e),
+                }
+            } else {
+                Ok((index, ArgumentType::Name(arg)))
+            }
+        });
 
         // collect all the errors together so they can all be returned
         // should allow for better cli ux
@@ -290,7 +291,7 @@ fn interpret_arguments(arguments: ArgMatches) -> Result<(), CliError> {
                 Err(e) => errors.push(e),
             }
         }
-        if errors.len() > 0 {
+        if !errors.is_empty() {
             return Err(CliError::MultipleError(errors));
         }
         results
@@ -301,9 +302,10 @@ fn interpret_arguments(arguments: ArgMatches) -> Result<(), CliError> {
     // get the files passed, if any
     let file_paths = if let Some(paths) = arguments.values_of("file") {
         let indicies = arguments.indices_of("file").unwrap();
-        paths.zip(indicies).map(|(arg, index)|{
-            (index, ArgumentType::File(arg))
-        }).collect()
+        paths
+            .zip(indicies)
+            .map(|(arg, index)| (index, ArgumentType::File(arg)))
+            .collect()
     } else {
         vec![]
     };
@@ -313,7 +315,7 @@ fn interpret_arguments(arguments: ArgMatches) -> Result<(), CliError> {
 
     // this sort is the reason the indicies are required, they are ignored after
     // this point
-    solutions.sort_unstable_by(|&(a,_),(b,_)|a.cmp(b));
+    solutions.sort_unstable_by(|&(a, _), (b, _)| a.cmp(b));
 
     // combine the arguments passed into groups
     // if the item provided has already been set for the latest group
@@ -330,27 +332,30 @@ fn interpret_arguments(arguments: ArgMatches) -> Result<(), CliError> {
                 if current_argument.file_pattern.is_none() {
                     current_argument.file_pattern = Some(a)
                 } else {
-                    let mut new = ProcessedArgument::default();
-                    new.file_pattern = Some(a);
-                    processed_arguments.push(new);
+                    processed_arguments.push(ProcessedArgument {
+                        file_pattern: Some(a),
+                        ..Default::default()
+                    });
                 }
             }
             a @ (Digit(_) | Range(_, _)) => {
                 if current_argument.number.is_none() {
                     current_argument.number = Some(*a)
                 } else {
-                    let mut new = ProcessedArgument::default();
-                    new.number = Some(*a);
-                    processed_arguments.push(new);
+                    processed_arguments.push(ProcessedArgument {
+                        number: Some(*a),
+                        ..Default::default()
+                    });
                 }
             }
             Name(a) => {
                 if current_argument.name.is_none() {
                     current_argument.name = Some(a)
                 } else {
-                    let mut new = ProcessedArgument::default();
-                    new.name = Some(a);
-                    processed_arguments.push(new);
+                    processed_arguments.push(ProcessedArgument {
+                        name: Some(a),
+                        ..Default::default()
+                    });
                 }
             }
         }
@@ -382,13 +387,11 @@ fn interpret_arguments(arguments: ArgMatches) -> Result<(), CliError> {
         let sols = get_solutions(&argument);
         if let Some(sols) = sols {
             solutions.extend(sols);
+        } else if !has_failed {
+            has_failed = true;
+            err = CliError::BadArgument(format!("{}", argument));
         } else {
-           if !has_failed {
-               has_failed = true;
-               err = CliError::BadArgument(format!("{}", argument));
-           } else {
-               err = CliError::from(err, CliError::BadArgument(format!("{}", argument)));
-           }
+            err = CliError::from(err, CliError::BadArgument(format!("{}", argument)));
         }
     }
 
@@ -399,11 +402,14 @@ fn interpret_arguments(arguments: ArgMatches) -> Result<(), CliError> {
 
     // de duplicate the solutions, for proper de-duplication requires sorting
     // first, anyway is nicer to run in sorted order
-    solutions.sort_unstable_by(|a,b|a.number.cmp(&b.number));
+    solutions.sort_unstable_by(|a, b| a.number.cmp(&b.number));
     let found_count = solutions.len();
     solutions.dedup();
     if solutions.len() != found_count {
-        eprintln!("Warning: removed {} duplicate(s) passed on command line", found_count - solutions.len());
+        eprintln!(
+            "Warning: removed {} duplicate(s) passed on command line",
+            found_count - solutions.len()
+        );
     }
 
     // run all the solutions
@@ -441,12 +447,9 @@ fn main() {
         .get_matches();
 
     let result = interpret_arguments(matches);
-    match result {
-        Err(msg) => {
-            eprintln!("Error(s) occured: \n{}Exiting.", msg);
-            return;
-        }
-        _=>()
+    if let Err(msg) = result {
+        eprintln!("Error(s) occured: \n{}Exiting.", msg);
+        return;
     }
 
     let now = now.elapsed().as_secs_f64();

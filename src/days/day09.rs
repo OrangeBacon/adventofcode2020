@@ -1,6 +1,7 @@
 use anyhow::Result;
 use itertools::Itertools;
 use libaoc::{aoc, AocResult, Timer};
+use std::cmp::Ordering;
 
 #[aoc("3199139634", "438559930")]
 pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
@@ -28,15 +29,19 @@ pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
     let mut sum = nums[0] + nums[1];
 
     let part2 = loop {
-        if sum < part1 {
-            right += 1;
-            sum += nums[right];
-        } else if sum > part1 {
-            sum -= nums[left];
-            left += 1;
-        } else {
-            let window = &nums[left..=right];
-            break window.iter().max().unwrap() + window.iter().min().unwrap();
+        match sum.cmp(&part1) {
+            Ordering::Less => {
+                right += 1;
+                sum += nums[right];
+            }
+            Ordering::Greater => {
+                sum -= nums[left];
+                left += 1;
+            }
+            Ordering::Equal => {
+                let window = &nums[left..=right];
+                break window.iter().max().unwrap() + window.iter().min().unwrap();
+            }
         }
     };
     timer.lap("Part 2");

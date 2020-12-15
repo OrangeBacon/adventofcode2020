@@ -4,7 +4,7 @@ use libaoc::{aoc, AocResult, Timer};
 #[aoc("1885", "2024782584832")]
 pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
     let mut nums: Vec<_> = input.lines().map(|x| x.parse::<i64>().unwrap()).collect();
-    nums.sort();
+    nums.sort_unstable();
     timer.lap("Parse");
 
     let mut outlet = 0;
@@ -61,7 +61,7 @@ pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
             }
             options
         })
-        .filter(|x| x.len() > 0)
+        .filter(|x| !x.is_empty())
         .collect();
     timer.lap("Part 2 Collect Options");
 

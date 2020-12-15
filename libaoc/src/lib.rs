@@ -1,6 +1,6 @@
 #![feature(str_split_once)]
 
-use anyhow::{Result, anyhow};
+use anyhow::{anyhow, Result};
 use std::{cmp::max, fmt, string::ToString};
 
 mod vm;
@@ -21,8 +21,12 @@ pub struct Solution {
 
 impl PartialEq for Solution {
     fn eq(&self, a: &Solution) -> bool {
-        if self.number != a.number {return false}
-        if self.name != a.name {return false}
+        if self.number != a.number {
+            return false;
+        }
+        if self.name != a.name {
+            return false;
+        }
         true
     }
 }
@@ -32,8 +36,15 @@ impl Solution {
         (self.run)(timer, arg)
     }
 
-    pub fn get(solutions: &'static [Solution], day: usize, name: &str) -> Result<&'static Solution> {
-        solutions.iter().find(|&x| x.number == day && x.name == name).ok_or(anyhow!("Could not find solution"))
+    pub fn get(
+        solutions: &'static [Solution],
+        day: usize,
+        name: &str,
+    ) -> Result<&'static Solution> {
+        solutions
+            .iter()
+            .find(|&x| x.number == day && x.name == name)
+            .ok_or_else(|| anyhow!("Could not find solution"))
     }
 
     pub fn latest_day(solutions: &'static [Solution]) -> usize {

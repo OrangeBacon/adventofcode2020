@@ -23,7 +23,6 @@ pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
     let hair = Regex::new(r"#[0-9a-f]{6}")?;
     let eye = Regex::new(r"amb|blu|brn|gry|grn|hzl|oth")?;
     let pid = Regex::new(r"^[0-9]{9}$")?;
-    let cid = Regex::new("")?;
     timer.lap("Regex Compilation");
 
     let res = datas
@@ -37,18 +36,16 @@ pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
         let mut passed = true;
         for sec in pass {
             if !match sec[0] {
-                "byr" => &birth,
-                "iyr" => &issue,
-                "eyr" => &expire,
-                "hgt" => &height,
-                "hcl" => &hair,
-                "ecl" => &eye,
-                "pid" => &pid,
-                "cid" => &cid,
+                "byr" => birth.is_match(sec[1]),
+                "iyr" => issue.is_match(sec[1]),
+                "eyr" => expire.is_match(sec[1]),
+                "hgt" => height.is_match(sec[1]),
+                "hcl" => hair.is_match(sec[1]),
+                "ecl" => eye.is_match(sec[1]),
+                "pid" => pid.is_match(sec[1]),
+                "cid" => true,
                 _ => panic!(),
-            }
-            .is_match(sec[1])
-            {
+            } {
                 passed = false;
                 break;
             }

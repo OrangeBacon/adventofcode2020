@@ -10,17 +10,15 @@ enum Postion {
 use Postion::*;
 
 fn get_seat(
-    input: &Vec<Vec<Postion>>,
-    w: i32,
-    h: i32,
-    x: i32,
-    y: i32,
-    x_off: i32,
-    y_off: i32,
+    input: &[Vec<Postion>],
+    width: i32,
+    height: i32,
+    pos: (i32, i32),
+    off: (i32, i32),
     any_dist: bool,
 ) -> bool {
-    let mut current_x = x + x_off;
-    let mut current_y = y + y_off;
+    let mut current_x = pos.0 + off.0;
+    let mut current_y = pos.1 + off.1;
 
     let mut i = 0;
     let mut result = Empty;
@@ -28,10 +26,10 @@ fn get_seat(
         if i > 0 && !any_dist {
             break;
         }
-        if current_x < 0 || current_x > w {
+        if current_x < 0 || current_x > width {
             break;
         }
-        if current_y < 0 || current_y > h {
+        if current_y < 0 || current_y > height {
             break;
         }
         let tile = input[current_y as usize][current_x as usize];
@@ -39,16 +37,16 @@ fn get_seat(
             result = tile;
             break;
         }
-        current_x += x_off;
-        current_y += y_off;
+        current_x += off.0;
+        current_y += off.1;
         i += 1;
     }
     result == Occupied
 }
 
 fn advance(
-    input: &Vec<Vec<Postion>>,
-    output: &mut Vec<Vec<Postion>>,
+    input: &[Vec<Postion>],
+    output: &mut [Vec<Postion>],
     any_dist: bool,
     occ_count: i32,
 ) -> i32 {
@@ -73,7 +71,7 @@ fn advance(
                 ];
                 let mut count = 0;
                 for off in &OFFSETS {
-                    count += if get_seat(&input, w, h, x as i32, y as i32, off.0, off.1, any_dist) {
+                    count += if get_seat(&input, w, h, (x as i32, y as i32), *off, any_dist) {
                         1
                     } else {
                         0
@@ -99,8 +97,8 @@ fn advance(
     seats_occupied
 }
 
-fn iter_advance(initial_seats: &Vec<Vec<Postion>>, any_dist: bool, occ_count: i32) -> i32 {
-    let mut seats1 = initial_seats.to_vec().clone();
+fn iter_advance(initial_seats: &[Vec<Postion>], any_dist: bool, occ_count: i32) -> i32 {
+    let mut seats1 = initial_seats.to_vec();
     let mut seats2 = initial_seats.to_vec();
     let mut prev_count = 0;
     loop {

@@ -27,7 +27,7 @@ pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
     for line in input {
         let name = remove_bag_suffix.replace(line[0].trim(), "");
         let contains: Vec<_> = line[1]
-            .split(",")
+            .split(',')
             .map(|x| remove_bag_suffix.replace(x.trim(), ""))
             .collect();
         let contains = contains

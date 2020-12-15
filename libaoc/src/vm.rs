@@ -45,7 +45,7 @@ impl InstructionState {
     fn new(inst: Instruction) -> Self {
         InstructionState {
             has_run: false,
-            inst: inst,
+            inst,
         }
     }
 }
@@ -70,12 +70,7 @@ impl VM {
     where
         T: IntoIterator<Item = (&'b str, &'b str)>,
     {
-        Self::new(
-            &inst
-                .into_iter()
-                .map(|x| Instruction::new(x))
-                .collect::<Vec<_>>(),
-        )
+        Self::new(&inst.into_iter().map(Instruction::new).collect::<Vec<_>>())
     }
 
     /// construct a virtual machine from a list of instructions
@@ -132,9 +127,6 @@ impl<'a> Iterator for VMInstructionIter<'a> {
     type Item = Instruction;
     fn next(&mut self) -> Option<Instruction> {
         self.index += 1;
-        self.state
-            .instructions
-            .get(self.index - 1)
-            .and_then(|&f| Some(f.inst))
+        self.state.instructions.get(self.index - 1).map(|&f| f.inst)
     }
 }

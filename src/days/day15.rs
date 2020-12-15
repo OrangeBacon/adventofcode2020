@@ -1,8 +1,8 @@
 use anyhow::Result;
-use libaoc::{aoc, AocResult, Timer};
 use hashbrown::HashMap;
+use libaoc::{aoc, AocResult, Timer};
 
-fn run(numbers: &[usize], max: usize) -> usize{
+fn run(numbers: &[usize], max: usize) -> usize {
     let mut spoken = 0;
     let len = numbers.len();
     let mut numbers_map = HashMap::new();
@@ -11,27 +11,25 @@ fn run(numbers: &[usize], max: usize) -> usize{
         if i < numbers.len() {
             numbers_map.insert(num, (1, i, 0));
             spoken = num;
-        } else {
-            if let Some(last) = numbers_map.get_mut(&spoken) {
-                if last.0 == 1 {
-                    spoken = 0;
-                    let num = numbers_map.get_mut(&0).unwrap();
-                    num.0 += 1;
-                    num.2 = num.1;
-                    num.1 = i;
-                } else {
-                    spoken = last.1 - last.2;
-                    let temp = (1,i,0);
-                    let mut num = *numbers_map.get(&spoken).unwrap_or(&temp);
-                    num.0 += 1;
-                    num.2 = num.1;
-                    num.1 = i;
-                    numbers_map.insert(spoken, num);
-                }
-            } else {
-                numbers_map.insert(spoken, (1, i, 0));
+        } else if let Some(last) = numbers_map.get_mut(&spoken) {
+            if last.0 == 1 {
                 spoken = 0;
+                let num = numbers_map.get_mut(&0).unwrap();
+                num.0 += 1;
+                num.2 = num.1;
+                num.1 = i;
+            } else {
+                spoken = last.1 - last.2;
+                let temp = (1, i, 0);
+                let mut num = *numbers_map.get(&spoken).unwrap_or(&temp);
+                num.0 += 1;
+                num.2 = num.1;
+                num.1 = i;
+                numbers_map.insert(spoken, num);
             }
+        } else {
+            numbers_map.insert(spoken, (1, i, 0));
+            spoken = 0;
         }
     }
     spoken
@@ -39,7 +37,7 @@ fn run(numbers: &[usize], max: usize) -> usize{
 
 #[aoc("1015", "201")]
 pub fn solve(timer: &mut Timer, _input: String) -> Result<AocResult> {
-    let numbers = vec![19,0,5,1,10,13];
+    let numbers = vec![19, 0, 5, 1, 10, 13];
     timer.lap("Parse");
 
     let part1 = run(&numbers, 2020);
