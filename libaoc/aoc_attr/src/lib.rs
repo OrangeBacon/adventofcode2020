@@ -79,6 +79,7 @@ pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
             number: #day_number,
             name: #name,
             run: #provided_name,
+            takes_file_name: false,
         };
 
         #[linkme::distributed_slice(crate::FILES)]

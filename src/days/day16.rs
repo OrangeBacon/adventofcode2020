@@ -1,8 +1,8 @@
 use anyhow::Result;
+use bitvec::prelude::*;
 use libaoc::{aoc, AocResult, Timer};
 use regex::Regex;
 use std::ops::RangeInclusive;
-use bitvec::prelude::*;
 
 #[derive(Debug, Clone)]
 struct Constraint {

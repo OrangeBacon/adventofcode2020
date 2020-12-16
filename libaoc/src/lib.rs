@@ -16,6 +16,7 @@ pub struct Solution {
     pub number: usize,
     pub name: &'static str,
     pub run: fn(&mut Timer, &str) -> Result<AocResult>,
+    pub takes_file_name: bool,
 }
 
 impl PartialEq for Solution {

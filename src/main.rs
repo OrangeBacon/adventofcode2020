@@ -2,12 +2,13 @@
 #![feature(str_split_once)]
 #![feature(destructuring_assignment)]
 
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use clap::{App, Arg, ArgMatches};
 use libaoc::{AocFile, FloatTime, Solution, Timer};
 use linkme::distributed_slice;
 use regex::Regex;
-use std::{error::Error, fmt, time::Instant};
+use std::{error::Error, fmt, time::Instant, collections::HashMap, fs};
+use strfmt::strfmt;
 
 /// not actually used, is just to tell the compiler to compile the days so that
 /// distributed slice can work properly
@@ -30,6 +31,7 @@ enum CliError {
     DayOutOfRange(usize),
     InvalidRange(String),
     BadArgument(String),
+    GenericString(String),
     MultipleError(Vec<CliError>),
 }
 
@@ -74,8 +76,9 @@ impl fmt::Display for CliError {
                 num,
                 Solution::latest_day(&SOLUTIONS)
             ),
+            GenericString(e) => writeln!(f, "- {}", e),
             InvalidRange(e) => writeln!(f, "- Invalid range `{}`", e),
-            BadArgument(e) => writeln!(f, "- Error: Could not find anything to run matching {}", e),
+            BadArgument(e) => writeln!(f, "- Could not find anything to run matching {}", e),
             MultipleError(e) => {
                 for error in e {
                     write!(f, "{}", error)?;
@@ -89,14 +92,12 @@ impl fmt::Display for CliError {
 /// runs a solution with a given index and input data
 /// if debug is true, then timing infomation is printed out about the
 /// solution, otherwise just the answers are printed
-fn run_solution(solution: &Solution, debug: bool) {
+fn run_solution(solution: &Solution, file_data: &str, debug: bool) {
     if debug {
         println!("Running Day {} - {}\n", solution.number, solution.name);
     } else {
         print!("Day {} {}: ", solution.number, solution.name);
     }
-
-    let file_data = AocFile::get(&*FILES, solution.number).unwrap();
 
     let mut timer = Timer::new();
     let res = solution.run(&mut timer, file_data);
@@ -195,32 +196,44 @@ impl<'a> fmt::Display for ProcessedArgument<'a> {
 }
 
 /// converts between the command line input and the solutions it represents
-/// returns all solutions in the range provided if applicable
-/// if no solutions found returns None, so vec.len() is always > 0
-/// if some returned
-fn get_solutions(argument: &ProcessedArgument) -> Option<Vec<&'static Solution>> {
+/// returns all solutions in the range provided
+fn get_solutions(argument: &ProcessedArgument) -> Result<Vec<(&'static Solution, String)>> {
     use ArgumentType::*;
 
-    let name = argument.name?;
-    let day_range = argument.number?;
+    let name = argument.name.ok_or(anyhow!("missing argument name"))?;
+    let day_range = argument.number.ok_or(anyhow!("missing day range"))?;
     let day_range = match day_range {
         Digit(a) => a..=a,
         Range(a, b) => a..=b,
-        _ => return None,
+        _ => return Err(anyhow!("unexpected argument type for day range")),
     };
 
     let mut solutions = vec![];
     for day in day_range {
         if let Ok(sol) = Solution::get(&SOLUTIONS, day, name) {
-            solutions.push(sol);
+            let data = if let Some(file_pattern) = argument.file_pattern {
+                let mut map = HashMap::new();
+                map.insert("day".to_string(), day.to_string());
+                map.insert("name".to_string(), name.to_string());
+                let file_name = strfmt(file_pattern, &map)?;
+                if sol.takes_file_name {
+                    file_name
+                } else {
+                    fs::read_to_string(file_name)?
+                }
+            } else if sol.takes_file_name {
+                let mut map = HashMap::new();
+                map.insert("day".to_string(), day.to_string());
+                map.insert("name".to_string(), name.to_string());
+                strfmt("{name}/day{day}.txt", &map)?
+            } else {
+                AocFile::get(&*FILES, day)?.to_string()
+            };
+            solutions.push((sol, data));
         }
     }
 
-    if solutions.is_empty() {
-        None
-    } else {
-        Some(solutions)
-    }
+    Ok(solutions)
 }
 
 /// parses a range, to be interpreted as solution numbers
@@ -379,22 +392,26 @@ fn interpret_arguments(arguments: ArgMatches) -> Result<(), CliError> {
         if argument.number.is_none() {
             argument.number = Some(latest_day)
         }
-        if argument.file_pattern.is_none() {
-            argument.file_pattern = if argument.name == Some("solve") {
-                None
-            } else {
-                Some("{name}/day{day}.{type}")
-            }
-        }
 
         let sols = get_solutions(&argument);
-        if let Some(sols) = sols {
-            solutions.extend(sols);
-        } else if !has_failed {
-            has_failed = true;
-            err = CliError::BadArgument(format!("{}", argument));
-        } else {
-            err = CliError::from(err, CliError::BadArgument(format!("{}", argument)));
+        if let Ok(sols) = sols {
+            if sols.len() == 0 {
+                if !has_failed {
+                    has_failed = true;
+                    err = CliError::BadArgument(format!("{}", argument));
+                } else {
+                    err = CliError::from(err, CliError::BadArgument(format!("{}", argument)));
+                }
+            } else {
+                solutions.extend(sols);
+            }
+        } else if let Err(e) = sols {
+            if !has_failed {
+                has_failed = true;
+                err = CliError::GenericString(format!("{}", e));
+            } else {
+                err = CliError::from(err, CliError::GenericString(format!("{}", e)));
+            }
         }
     }
 
@@ -405,7 +422,7 @@ fn interpret_arguments(arguments: ArgMatches) -> Result<(), CliError> {
 
     // de duplicate the solutions, for proper de-duplication requires sorting
     // first, anyway is nicer to run in sorted order
-    solutions.sort_unstable_by(|a, b| a.number.cmp(&b.number));
+    solutions.sort_unstable_by(|(a,_), (b,_)| a.number.cmp(&b.number));
     let found_count = solutions.len();
     solutions.dedup();
     if solutions.len() != found_count {
@@ -417,7 +434,7 @@ fn interpret_arguments(arguments: ArgMatches) -> Result<(), CliError> {
 
     // run all the solutions
     for solution in &solutions {
-        run_solution(solution, solutions.len() == 1);
+        run_solution(solution.0, &solution.1, solutions.len() == 1);
     }
 
     Ok(())
