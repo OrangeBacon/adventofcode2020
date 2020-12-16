@@ -2,7 +2,7 @@ use anyhow::Result;
 use libaoc::{aoc, AocResult, Timer};
 
 #[aoc("", "")]
-pub fn solve(timer: &mut Timer, input: String) -> Result<AocResult> {
+pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
 
     timer.lap("Parse");
 
