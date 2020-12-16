@@ -12,11 +12,15 @@ pub use timer::*;
 pub use aoc_attr::aoc;
 
 /// type for each day's function, implemented by days/*.rs
+/// the cleanup function is optionally run, once per group of solutions with
+/// the same name.  a random cleanup function will be run, so they must be
+/// the same, or only have one provided in the group
 pub struct Solution {
     pub number: usize,
     pub name: &'static str,
     pub run: fn(&mut Timer, &str) -> Result<AocResult>,
     pub takes_file_name: bool,
+    pub cleanup_fn: Option<fn() -> ()>,
 }
 
 impl PartialEq for Solution {
@@ -70,6 +74,7 @@ impl AocFile {
 }
 
 /// generic result container for each day
+#[derive(Default)]
 pub struct AocResult {
     pub results: Vec<(&'static str, String)>,
 }
@@ -142,7 +147,9 @@ impl fmt::Display for AocResult {
 
 impl fmt::Debug for AocResult {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        writeln!(f, "Results:")?;
+        if !self.results.is_empty() {
+            writeln!(f, "Results:")?;
+        }
 
         let width = self
             .results

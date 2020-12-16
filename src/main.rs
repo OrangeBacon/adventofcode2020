@@ -2,12 +2,12 @@
 #![feature(str_split_once)]
 #![feature(destructuring_assignment)]
 
-use anyhow::{Result, anyhow};
+use anyhow::{anyhow, Result};
 use clap::{App, Arg, ArgMatches};
 use libaoc::{AocFile, FloatTime, Solution, Timer};
 use linkme::distributed_slice;
 use regex::Regex;
-use std::{error::Error, fmt, time::Instant, collections::HashMap, fs};
+use std::{collections::HashMap, error::Error, fmt, fs, time::Instant};
 use strfmt::strfmt;
 
 /// not actually used, is just to tell the compiler to compile the days so that
@@ -200,8 +200,12 @@ impl<'a> fmt::Display for ProcessedArgument<'a> {
 fn get_solutions(argument: &ProcessedArgument) -> Result<Vec<(&'static Solution, String)>> {
     use ArgumentType::*;
 
-    let name = argument.name.ok_or(anyhow!("missing argument name"))?;
-    let day_range = argument.number.ok_or(anyhow!("missing day range"))?;
+    let name = argument
+        .name
+        .ok_or_else(|| anyhow!("missing argument name"))?;
+    let day_range = argument
+        .number
+        .ok_or_else(|| anyhow!("missing day range"))?;
     let day_range = match day_range {
         Digit(a) => a..=a,
         Range(a, b) => a..=b,
@@ -395,7 +399,7 @@ fn interpret_arguments(arguments: ArgMatches) -> Result<(), CliError> {
 
         let sols = get_solutions(&argument);
         if let Ok(sols) = sols {
-            if sols.len() == 0 {
+            if sols.is_empty() {
                 if !has_failed {
                     has_failed = true;
                     err = CliError::BadArgument(format!("{}", argument));
@@ -422,7 +426,7 @@ fn interpret_arguments(arguments: ArgMatches) -> Result<(), CliError> {
 
     // de duplicate the solutions, for proper de-duplication requires sorting
     // first, anyway is nicer to run in sorted order
-    solutions.sort_unstable_by(|(a,_), (b,_)| a.number.cmp(&b.number));
+    solutions.sort_unstable_by(|(a, _), (b, _)| a.number.cmp(&b.number));
     let found_count = solutions.len();
     solutions.dedup();
     if solutions.len() != found_count {
@@ -433,8 +437,16 @@ fn interpret_arguments(arguments: ArgMatches) -> Result<(), CliError> {
     }
 
     // run all the solutions
+    let mut cleanup = HashMap::new();
     for solution in &solutions {
         run_solution(solution.0, &solution.1, solutions.len() == 1);
+        if let Some(func) = solution.0.cleanup_fn {
+            cleanup.insert(solution.0.name, func);
+        }
+    }
+
+    for func in cleanup.values() {
+        func();
     }
 
     Ok(())

@@ -15,6 +15,7 @@ anyhow = "1"
 itertools = "0.9"
 linkme = "0.2"
 bitvec = "0.19"
+criterion = "0.3"
 libaoc = {path = "libaoc"}
 
 [build-dependencies]
