@@ -2,7 +2,6 @@
 #![feature(str_split_once)]
 #![feature(min_const_generics)]
 #![feature(destructuring_assignment)]
-#![feature(const_in_array_repeat_expressions)]
 
 use anyhow::{anyhow, Result};
 use clap::{App, Arg, ArgMatches};

@@ -1,33 +1,85 @@
 use anyhow::Result;
+use hashbrown::HashMap;
+use itertools::Itertools;
 use libaoc::{aoc, AocResult, Timer};
-use std::collections::BTreeMap;
+use std::convert::TryInto;
 
-fn get_neighbors_3(coords: (i32, i32, i32), data: &BTreeMap<(i32, i32, i32), bool>) -> i32 {
+type Coords<const SIZE: usize> = [i32; SIZE];
+
+fn get_neighbors<const SIZE: usize>(
+    location: Coords<SIZE>,
+    data: &HashMap<Coords<SIZE>, bool>,
+) -> i32 {
+    let offsets = [[-1i32, 0, 1]; SIZE];
+
     let mut count = 0;
-    for x in (coords.0 - 1)..=(coords.0 + 1) {
-        for y in (coords.1 - 1)..=(coords.1 + 1) {
-            for z in (coords.2 - 1)..=(coords.2 + 1) {
-                if ((x, y, z) != coords) && *data.get(&(x, y, z)).unwrap_or(&false) {
-                    count += 1;
-                }
-            }
+    for current in offsets.iter().multi_cartesian_product() {
+        let coords: Vec<_> = current.iter().map(|x| **x).collect();
+        let coords: Coords<SIZE> = coords.try_into().unwrap();
+
+        let coords: Vec<_> = coords.iter().zip(&location).map(|(a, b)| a + b).collect();
+        let coords: Coords<SIZE> = coords.try_into().unwrap();
+
+        if location != coords && *data.get(&coords).unwrap_or(&false) {
+            count += 1;
         }
     }
 
     count
 }
 
-fn get_neighbors_4(coords: (i32, i32, i32, i32), data: &BTreeMap<(i32, i32, i32, i32), bool>) -> i32 {
-    let mut count = 0;
-    for x in (coords.0 - 1)..=(coords.0 + 1) {
-        for y in (coords.1 - 1)..=(coords.1 + 1) {
-            for z in (coords.2 - 1)..=(coords.2 + 1) {
-                for w in (coords.3 - 1)..=(coords.3 + 1) {
-                    if ((x, y, z, w) != coords) && *data.get(&(x, y, z, w)).unwrap_or(&false) {
-                        count += 1;
-                    }
+fn game<const SIZE: usize>(mut data: HashMap<[i32; SIZE], bool>, width: i32, height: i32) -> u32 {
+    let mut min_pos = [0; SIZE];
+    let mut size = [1; SIZE];
+    size[0] = width;
+    size[1] = height;
+
+    let mut new = HashMap::new();
+    for _ in 0..6 {
+        for i in min_pos.iter_mut() {
+            *i -= 1;
+        }
+
+        for i in size.iter_mut() {
+            *i += 1;
+        }
+
+        let iterators: Vec<Vec<_>> = min_pos
+            .iter()
+            .zip(&size)
+            .map(|(&a, &b)| (a..b).into_iter().collect())
+            .collect();
+        for coords in iterators.iter().multi_cartesian_product() {
+            let coords: Vec<_> = coords.iter().map(|x| **x).collect();
+            let coords: Coords<SIZE> = coords.try_into().unwrap();
+
+            let current_state = *data.get(&coords).unwrap_or(&false);
+            let neighbors = get_neighbors(coords, &data);
+            let new_state = if current_state {
+                if neighbors == 2 || neighbors == 3 {
+                    true
+                } else {
+                    false
                 }
-            }
+            } else {
+                if neighbors == 3 {
+                    true
+                } else {
+                    false
+                }
+            };
+
+            new.insert(coords, new_state);
+        }
+
+        (data, new) = (new, data);
+        new.clear();
+    }
+
+    let mut count = 0;
+    for &value in data.values() {
+        if value {
+            count += 1;
         }
     }
 
@@ -51,122 +103,23 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
         .collect();
     timer.lap("Parse");
 
-    let mut data_3 = BTreeMap::new();
-    let mut data_4 = BTreeMap::new();
+    let mut data_3 = HashMap::new();
+    let mut data_4 = HashMap::new();
     for (y, row) in input.iter().enumerate() {
         for (x, &item) in row.iter().enumerate() {
-            data_3.insert((x as i32, y as i32, 0), item);
-            data_4.insert((x as i32, y as i32, 0, 0), item);
+            data_3.insert([x as i32, y as i32, 0], item);
+            data_4.insert([x as i32, y as i32, 0, 0], item);
         }
     }
     timer.lap("Construct maps");
 
-    let mut min_pos = (0, 0, 0);
-    let mut size = (input[0].len() as i32, input.len() as i32, 1);
+    let width = input[0].len() as i32;
+    let height = input.len() as i32;
 
-    for _ in 0..6 {
-        let mut new = BTreeMap::new();
-
-        min_pos.0 -= 1;
-        min_pos.1 -= 1;
-        min_pos.2 -= 1;
-
-        size.0 += 1;
-        size.1 += 1;
-        size.2 += 1;
-
-        for x in min_pos.0..size.0 {
-            for y in min_pos.1..size.1 {
-                for z in min_pos.2..size.2 {
-                    let coords = (x, y, z);
-                    let current_state = *data_3.get(&coords).unwrap_or(&false);
-                    let neighbors = get_neighbors_3(coords, &data_3);
-                    let new_state = if current_state {
-                        if neighbors == 2 || neighbors == 3 {
-                            true
-                        } else {
-                            false
-                        }
-                    } else {
-                        if neighbors == 3 {
-                            true
-                        } else {
-                            false
-                        }
-                    };
-
-                    new.insert(coords, new_state);
-                }
-            }
-        }
-
-        data_3 = new;
-    }
-
-    let mut count = 0;
-    for &value in data_3.values() {
-        if value {
-            count += 1;
-        }
-    }
-    let part1 = count;
-
+    let part1 = game(data_3, width, height);
     timer.lap("Part 1");
 
-
-    let mut min_pos = (0, 0, 0, 0);
-    let mut size = (input[0].len() as i32, input.len() as i32, 1, 1);
-
-    for _ in 0..6 {
-        let mut new = BTreeMap::new();
-
-        min_pos.0 -= 1;
-        min_pos.1 -= 1;
-        min_pos.2 -= 1;
-        min_pos.3 -= 1;
-
-        size.0 += 1;
-        size.1 += 1;
-        size.2 += 1;
-        size.3 += 1;
-
-        for x in min_pos.0..size.0 {
-            for y in min_pos.1..size.1 {
-                for z in min_pos.2..size.2 {
-                    for w in min_pos.3..size.3 {
-                        let coords = (x, y, z, w);
-                        let current_state = *data_4.get(&coords).unwrap_or(&false);
-                        let neighbors = get_neighbors_4(coords, &data_4);
-                        let new_state = if current_state {
-                            if neighbors == 2 || neighbors == 3 {
-                                true
-                            } else {
-                                false
-                            }
-                        } else {
-                            if neighbors == 3 {
-                                true
-                            } else {
-                                false
-                            }
-                        };
-
-                        new.insert(coords, new_state);
-                    }
-                }
-            }
-        }
-
-        data_4 = new;
-    }
-
-    let mut count = 0;
-    for &value in data_4.values() {
-        if value {
-            count += 1;
-        }
-    }
-    let part2 = count;
+    let part2 = game(data_4, width, height);
     timer.lap("Part 2");
 
     Ok(AocResult::new(part1, part2))
