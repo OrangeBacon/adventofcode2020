@@ -56,17 +56,9 @@ fn game<const SIZE: usize>(mut data: HashMap<[i32; SIZE], bool>, width: i32, hei
             let current_state = *data.get(&coords).unwrap_or(&false);
             let neighbors = get_neighbors(coords, &data);
             let new_state = if current_state {
-                if neighbors == 2 || neighbors == 3 {
-                    true
-                } else {
-                    false
-                }
+                neighbors == 2 || neighbors == 3
             } else {
-                if neighbors == 3 {
-                    true
-                } else {
-                    false
-                }
+                neighbors == 3
             };
 
             new.insert(coords, new_state);
