@@ -1,8 +1,8 @@
 use anyhow::Result;
-use libaoc::{aoc, AocResult, Timer};
-use regex::Regex;
-use pcre2::bytes::Regex as RegexPcre2;
 use hashbrown::HashMap;
+use libaoc::{aoc, AocResult, Timer};
+use pcre2::bytes::Regex as RegexPcre2;
+use regex::Regex;
 use std::fmt::{self, Write};
 
 #[derive(Clone, Copy, Debug)]
@@ -17,7 +17,11 @@ enum RuleType {
 }
 
 impl RuleType {
-    fn to_regex(self, out: &mut String, rules: &HashMap<usize, RuleType>) -> Result<(), fmt::Error> {
+    fn to_regex(
+        self,
+        out: &mut String,
+        rules: &HashMap<usize, RuleType>,
+    ) -> Result<(), fmt::Error> {
         use RuleType::*;
 
         match self {
@@ -27,32 +31,32 @@ impl RuleType {
                 rules[&a].to_regex(out, rules)?;
                 rules[&b].to_regex(out, rules)
             }
-            OneOne(a,b) => {
-                write!(out, "((")?;
+            OneOne(a, b) => {
+                write!(out, "(?:(")?;
                 rules[&a].to_regex(out, rules)?;
-                write!(out, ")|(")?;
+                write!(out, ")|(?:")?;
                 rules[&b].to_regex(out, rules)?;
                 write!(out, "))")
             }
-            TwoTwo(a,b,c,d) => {
-                write!(out, "((")?;
+            TwoTwo(a, b, c, d) => {
+                write!(out, "(?:(?:")?;
                 rules[&a].to_regex(out, rules)?;
                 rules[&b].to_regex(out, rules)?;
-                write!(out, ")|(")?;
+                write!(out, ")|(?:")?;
                 rules[&c].to_regex(out, rules)?;
                 rules[&d].to_regex(out, rules)?;
                 write!(out, "))")
             }
             Rule8(a) => {
-                write!(out, "(")?;
+                write!(out, "(?:")?;
                 rules[&a].to_regex(out, rules)?;
                 write!(out, ")+")
             }
-            Rule11(a,b) => {
-                write!(out, "(?<rule11>(")?;
+            Rule11(a, b) => {
+                write!(out, "(?<rule11>(?:")?;
                 rules[&a].to_regex(out, rules)?;
                 rules[&b].to_regex(out, rules)?;
-                write!(out, ")|(")?;
+                write!(out, ")|(?:")?;
                 rules[&a].to_regex(out, rules)?;
                 write!(out, "(?&rule11)")?;
                 rules[&b].to_regex(out, rules)?;
@@ -73,7 +77,10 @@ impl RuleType {
 
         let kind = match right.len() {
             1 => match right[0].len() {
-                2 => Two(*(right[0][0].1.as_ref().unwrap()), *(right[0][1].1.as_ref().unwrap())),
+                2 => Two(
+                    *(right[0][0].1.as_ref().unwrap()),
+                    *(right[0][1].1.as_ref().unwrap()),
+                ),
                 1 => {
                     if let Ok(num) = right[0][0].1 {
                         One(num)
@@ -89,11 +96,11 @@ impl RuleType {
                     *(right[1][0].1.as_ref().unwrap()),
                 ),
                 2 => TwoTwo(
-                        *(right[0][0].1.as_ref().unwrap()),
-                        *(right[0][1].1.as_ref().unwrap()),
-                        *(right[1][0].1.as_ref().unwrap()),
-                        *(right[1][1].1.as_ref().unwrap()),
-                    ),
+                    *(right[0][0].1.as_ref().unwrap()),
+                    *(right[0][1].1.as_ref().unwrap()),
+                    *(right[1][0].1.as_ref().unwrap()),
+                    *(right[1][1].1.as_ref().unwrap()),
+                ),
                 _ => panic!(),
             },
             _ => panic!(),
@@ -113,30 +120,32 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     timer.lap("Parse");
 
     let mut reg = String::new();
-    write!(reg, "^(")?;
+    write!(reg, "^(?:")?;
     rules[&0].to_regex(&mut reg, &rules)?;
     write!(reg, ")$")?;
     let reg = Regex::new(&reg)?;
 
-    let part1 = input[1].lines().fold(0, |acc, line| {
-        if reg.is_match(line) {
-            acc + 1
-        } else {
-            acc
-        }
-    });
+    let part1 = input[1].lines().fold(
+        0,
+        |acc, line| {
+            if reg.is_match(line) {
+                acc + 1
+            } else {
+                acc
+            }
+        },
+    );
 
     timer.lap("Part 1");
 
     rules.insert(8, RuleType::Rule8(42));
     rules.insert(11, RuleType::Rule11(42, 31));
 
-    timer.lap("Part 2");
-
     let mut reg = String::new();
-    write!(reg, "^(")?;
+    write!(reg, "^(?:")?;
     rules[&0].to_regex(&mut reg, &rules)?;
     write!(reg, ")$")?;
+
     let reg = RegexPcre2::new(&reg)?;
 
     let part2 = input[1].lines().fold(0, |acc, line| {
@@ -146,6 +155,8 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
             acc
         }
     });
+
+    timer.lap("Part 2");
 
     Ok(AocResult::new(part1, part2))
 }
