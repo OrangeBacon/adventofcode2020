@@ -17,6 +17,7 @@ linkme = "0.2"
 bitvec = "0.19"
 criterion = "0.3"
 logos = "0.11"
+pcre2 = "0.2"
 libaoc = {path = "libaoc"}
 
 [build-dependencies]
