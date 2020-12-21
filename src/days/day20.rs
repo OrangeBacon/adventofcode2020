@@ -1,9 +1,9 @@
 use anyhow::Result;
+use hashbrown::HashSet;
 use libaoc::{aoc, AocResult, Timer};
 use regex::Regex;
 use std::cell::RefCell;
 use std::collections::BTreeMap;
-use hashbrown::HashSet;
 
 #[derive(Clone, Debug, Copy)]
 struct Adjacency {
@@ -31,26 +31,32 @@ impl Tile {
     fn get_side(&self, side: usize) -> Option<usize> {
         let mut adj = self.adjacency.to_vec();
         if self.flip {
-            adj.swap(0,2);
+            adj.swap(0, 2);
         }
         adj.rotate_right(self.rotation);
-        adj[side].get(0).and_then(|x|Some(x.id))
+        adj[side].get(0).and_then(|x| Some(x.id))
     }
 
     /// applies flips and rotation until side side == id
     fn set_transform(&mut self, side: usize, id: usize, side2: usize, id2: usize) {
         let mut adj = self.adjacency.to_vec();
         for i in 0..4 {
-            if ((id == 0 && adj[side].len() == 0) || (adj[side].len() > 0 && adj[side][0].id == id))&&((id2 == 0 && adj[side2].len() == 0) || (adj[side2].len() > 0 && adj[side2][0].id == id2)) {
+            if ((id == 0 && adj[side].len() == 0) || (adj[side].len() > 0 && adj[side][0].id == id))
+                && ((id2 == 0 && adj[side2].len() == 0)
+                    || (adj[side2].len() > 0 && adj[side2][0].id == id2))
+            {
                 self.rotation = i;
                 return;
             }
             adj.rotate_right(1);
         }
-        adj.swap(0,2);
+        adj.swap(0, 2);
         self.flip = true;
         for i in 0..4 {
-            if ((id == 0 && adj[side].len() == 0) || (adj[side].len() > 0 && adj[side][0].id == id))&&((id2 == 0 && adj[side2].len() == 0) || (adj[side2].len() > 0 && adj[side2][0].id == id2)) {
+            if ((id == 0 && adj[side].len() == 0) || (adj[side].len() > 0 && adj[side][0].id == id))
+                && ((id2 == 0 && adj[side2].len() == 0)
+                    || (adj[side2].len() > 0 && adj[side2][0].id == id2))
+            {
                 self.rotation = i;
                 return;
             }
@@ -69,7 +75,12 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
             let id = parts.0[5..=8].parse().unwrap();
             let data = parts.1.replace('.', "0").replace('#', "1");
             let data_map: Vec<_> = data.lines().collect();
-            let chars = data_map.iter().skip(1).take(8).map(|x|x.chars().skip(1).take(8).collect()).collect();
+            let chars = data_map
+                .iter()
+                .skip(1)
+                .take(8)
+                .map(|x| x.chars().skip(1).take(8).collect())
+                .collect();
 
             let top = usize::from_str_radix(data_map[0], 2).unwrap();
             let right = usize::from_str_radix(
@@ -98,22 +109,20 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
             )
             .unwrap();
 
-            let top_flip = usize::from_str_radix(&data_map[0].chars().rev().collect::<String>(), 2).unwrap();
+            let top_flip =
+                usize::from_str_radix(&data_map[0].chars().rev().collect::<String>(), 2).unwrap();
             let right_flip = usize::from_str_radix(
                 &data_map
-                    .iter().rev()
+                    .iter()
+                    .rev()
                     .map(|x| x.chars().rev().next().unwrap())
                     .collect::<String>(),
                 2,
             )
             .unwrap();
-            let bottom_flip = usize::from_str_radix(
-                &data_map[data_map.len() - 1]
-                    .chars()
-                    .collect::<String>(),
-                2,
-            )
-            .unwrap();
+            let bottom_flip =
+                usize::from_str_radix(&data_map[data_map.len() - 1].chars().collect::<String>(), 2)
+                    .unwrap();
             let left_flip = usize::from_str_radix(
                 &data_map
                     .iter()
@@ -143,12 +152,14 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
         let mut adjacency = [vec![], vec![], vec![], vec![]];
         for (side_id, &side) in image.borrow().sides.iter().enumerate() {
             for (&test_id, test_image) in &input {
-                if test_id == id {continue;}
+                if test_id == id {
+                    continue;
+                }
                 for (test_side_id, &test_side) in test_image.borrow().sides.iter().enumerate() {
                     if side == test_side {
                         adjacency[side_id].push(Adjacency {
                             id: test_id,
-                            side: test_side_id+2,
+                            side: test_side_id + 2,
                             flip: false,
                         })
                     }
@@ -168,17 +179,19 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     // it apears that adjacency lists contain either 0 or 1 adjacency, which
     // makes things significantly easier assuming this holds
 
-    let adjacency_sums:Vec<_> = input.iter().map(|(&id, x)| {
-        (id, x.borrow().adjacency.iter().map(|x|x.len()).sum::<usize>())
-    }).collect();
+    let adjacency_sums: Vec<_> = input
+        .iter()
+        .map(|(&id, x)| {
+            (
+                id,
+                x.borrow().adjacency.iter().map(|x| x.len()).sum::<usize>(),
+            )
+        })
+        .collect();
 
-    let part1 = adjacency_sums.iter().fold(1, |acc, (id, val)| {
-        if *val == 2 {
-            acc * id
-        } else {
-            acc
-        }
-    });
+    let part1 = adjacency_sums
+        .iter()
+        .fold(1, |acc, (id, val)| if *val == 2 { acc * id } else { acc });
 
     timer.lap("Part 1");
 
@@ -186,12 +199,17 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     let mut image = vec![vec![0usize; image_size]; image_size];
 
     // first cell
-    image[0][0] = adjacency_sums.iter().filter(|(_,v)|*v==2).next().unwrap().0;
+    image[0][0] = adjacency_sums
+        .iter()
+        .filter(|(_, v)| *v == 2)
+        .next()
+        .unwrap()
+        .0;
     input[&image[0][0]].borrow_mut().set_transform(0, 0, 3, 0);
 
     // first row
     for i in 1..image_size {
-        let left = image[0][i-1];
+        let left = image[0][i - 1];
         let new_id = input[&left].borrow().get_side(1).unwrap();
         image[0][i] = new_id;
         input[&new_id].borrow_mut().set_transform(0, 0, 3, left);
@@ -199,7 +217,7 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
 
     // first column
     for i in 1..image_size {
-        let above = image[i-1][0];
+        let above = image[i - 1][0];
         let new_id = input[&above].borrow().get_side(2).unwrap();
         image[i][0] = new_id;
         input[&new_id].borrow_mut().set_transform(0, above, 3, 0);
@@ -208,8 +226,8 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     // other cells
     for col in 1..image_size {
         for row in 1..image_size {
-            let above = image[row-1][col];
-            let left = image[row][col-1];
+            let above = image[row - 1][col];
+            let left = image[row][col - 1];
             let new_id = input[&above].borrow().get_side(2).unwrap();
             image[row][col] = new_id;
             input[&new_id].borrow_mut().set_transform(0, above, 3, left);
@@ -244,31 +262,35 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
         }
     }
 
-    fn check_monster(i: &[Vec<char>], quick_exit: bool, found_set: &mut HashSet<(usize, usize)>) -> i32 {
+    fn check_monster(
+        i: &[Vec<char>],
+        quick_exit: bool,
+        found_set: &mut HashSet<(usize, usize)>,
+    ) -> i32 {
         let mut count = 0;
         for r in 0..(i.len() - 2) {
-            for c in 0..(i.len()-19) {
+            for c in 0..(i.len() - 19) {
                 //                   #
                 // #    ##    ##    ###
                 //  #  #  #  #  #  #
                 let monster = [
-                    (r,c+18),
-                    (r+1,c),
-                    (r+1,c+5),
-                    (r+1,c+6),
-                    (r+1,c+11),
-                    (r+1,c+12),
-                    (r+1,c+17),
-                    (r+1,c+18),
-                    (r+1,c+19),
-                    (r+2,c+1),
-                    (r+2,c+4),
-                    (r+2,c+7),
-                    (r+2,c+10),
-                    (r+2,c+13),
-                    (r+2,c+16),
+                    (r, c + 18),
+                    (r + 1, c),
+                    (r + 1, c + 5),
+                    (r + 1, c + 6),
+                    (r + 1, c + 11),
+                    (r + 1, c + 12),
+                    (r + 1, c + 17),
+                    (r + 1, c + 18),
+                    (r + 1, c + 19),
+                    (r + 2, c + 1),
+                    (r + 2, c + 4),
+                    (r + 2, c + 7),
+                    (r + 2, c + 10),
+                    (r + 2, c + 13),
+                    (r + 2, c + 16),
                 ];
-                let is_monster = monster.iter().all(|&(r,c)|i[r][c]=='1');
+                let is_monster = monster.iter().all(|&(r, c)| i[r][c] == '1');
                 if is_monster && quick_exit {
                     return 1;
                 }
@@ -317,13 +339,9 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     }
 
     let ones = i.iter().fold(0, |acc, row| {
-        acc + row.iter().fold(0, |acc, tile| {
-            if *tile == '1' {
-                acc + 1
-            } else {
-                acc
-            }
-        })
+        acc + row
+            .iter()
+            .fold(0, |acc, tile| if *tile == '1' { acc + 1 } else { acc })
     });
 
     let mut found_set = HashSet::new();
