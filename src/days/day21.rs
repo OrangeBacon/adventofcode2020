@@ -2,7 +2,6 @@ use anyhow::Result;
 use hashbrown::{HashMap, HashSet};
 use libaoc::{aoc, AocResult, Timer};
 use std::collections::BTreeMap;
-use std::iter::FromIterator;
 
 #[derive(Debug)]
 struct Line<'a> {
@@ -29,7 +28,7 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     for line in input.iter() {
         for allergen in &line.allergens {
             if let Some(current) = ingredients.get(allergen) {
-                let int = HashSet::from_iter(line.ingredients.iter().copied())
+                let int = line.ingredients.iter().copied().collect::<HashSet<_>>()
                     .intersection(current)
                     .copied()
                     .collect();
@@ -37,7 +36,7 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
             } else {
                 ingredients.insert(
                     allergen,
-                    HashSet::from_iter(line.ingredients.iter().copied()),
+                    line.ingredients.iter().copied().collect(),
                 );
             }
         }
@@ -66,12 +65,11 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     for _ in 0..ingredients.len() {
         let (name, ones) = ingredients
             .iter()
-            .filter(|&(_, x)| x.len() == 1)
-            .next()
+            .find(|&(_, x)| x.len() == 1)
             .unwrap();
         let value = *ones.iter().next().unwrap();
 
-        mappings.insert(name.clone(), value);
+        mappings.insert(*name, value);
 
         for (_, list) in ingredients.iter_mut() {
             list.retain(|x| *x != value);
@@ -80,7 +78,7 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
 
     let part2: Vec<_> = mappings.values().collect();
     let part2 = part2.iter().fold(String::new(), |s, c| {
-        if s.len() > 0 {
+        if !s.is_empty() {
             s + "," + c
         } else {
             c.to_string()

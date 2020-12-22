@@ -34,16 +34,16 @@ impl Tile {
             adj.swap(0, 2);
         }
         adj.rotate_right(self.rotation);
-        adj[side].get(0).and_then(|x| Some(x.id))
+        adj[side].get(0).map(|x|x.id)
     }
 
     /// applies flips and rotation until side side == id
     fn set_transform(&mut self, side: usize, id: usize, side2: usize, id2: usize) {
         let mut adj = self.adjacency.to_vec();
         for i in 0..4 {
-            if ((id == 0 && adj[side].len() == 0) || (adj[side].len() > 0 && adj[side][0].id == id))
-                && ((id2 == 0 && adj[side2].len() == 0)
-                    || (adj[side2].len() > 0 && adj[side2][0].id == id2))
+            if ((id == 0 && adj[side].is_empty()) || (!adj[side].is_empty() && adj[side][0].id == id))
+                && ((id2 == 0 && adj[side2].is_empty())
+                    || (!adj[side2].is_empty() && adj[side2][0].id == id2))
             {
                 self.rotation = i;
                 return;
@@ -53,9 +53,9 @@ impl Tile {
         adj.swap(0, 2);
         self.flip = true;
         for i in 0..4 {
-            if ((id == 0 && adj[side].len() == 0) || (adj[side].len() > 0 && adj[side][0].id == id))
-                && ((id2 == 0 && adj[side2].len() == 0)
-                    || (adj[side2].len() > 0 && adj[side2][0].id == id2))
+            if ((id == 0 && adj[side].is_empty()) || (!adj[side].is_empty() && adj[side][0].id == id))
+                && ((id2 == 0 && adj[side2].is_empty())
+                    || (!adj[side2].is_empty() && adj[side2][0].id == id2))
             {
                 self.rotation = i;
                 return;
@@ -201,8 +201,7 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     // first cell
     image[0][0] = adjacency_sums
         .iter()
-        .filter(|(_, v)| *v == 2)
-        .next()
+        .find(|(_, v)| *v == 2)
         .unwrap()
         .0;
     input[&image[0][0]].borrow_mut().set_transform(0, 0, 3, 0);
@@ -242,9 +241,9 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
 
         for _ in 0..tile.rotation {
             let mut new = vec![vec![]; 8];
-            for col in 0..8 {
+            for (col, n) in new.iter_mut().enumerate() {
                 for row in (0..8).rev() {
-                    new[col].push(tile.data[row][col]);
+                    n.push(tile.data[row][col]);
                 }
             }
             tile.data = new;
@@ -306,16 +305,16 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
         count
     }
 
-    'out: loop {
+    'out: {
         for _ in 0..4 {
             if check_monster(&i, true, &mut HashSet::new()) > 0 {
                 break 'out;
             }
 
             let mut new = vec![vec![]; i.len()];
-            for col in 0..i.len() {
+            for (col, n) in new.iter_mut().enumerate() {
                 for row in (0..i.len()).rev() {
-                    new[col].push(i[row][col]);
+                    n.push(i[row][col]);
                 }
             }
             i = new;
@@ -327,9 +326,9 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
             }
 
             let mut new = vec![vec![]; i.len()];
-            for col in 0..i.len() {
+            for (col, n) in new.iter_mut().enumerate() {
                 for row in (0..i.len()).rev() {
-                    new[col].push(i[row][col]);
+                    n.push(i[row][col]);
                 }
             }
             i = new;

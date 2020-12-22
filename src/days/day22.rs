@@ -31,9 +31,9 @@ fn recurse_combat(players: &[VecDeque<usize>], recurse: bool) -> (usize, VecDequ
             players[1].push_back(play1);
         }
 
-        if players[0].len() == 0 {
+        if players[0].is_empty() {
             break (1, players[1].clone());
-        } else if players[1].len() == 0 {
+        } else if players[1].is_empty() {
             break (0, players[0].clone());
         }
 
