@@ -1,4 +1,5 @@
 #![feature(or_patterns)]
+#![feature(deque_range)]
 #![feature(str_split_once)]
 #![feature(min_const_generics)]
 #![feature(destructuring_assignment)]
