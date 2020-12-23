@@ -34,14 +34,15 @@ impl Tile {
             adj.swap(0, 2);
         }
         adj.rotate_right(self.rotation);
-        adj[side].get(0).map(|x|x.id)
+        adj[side].get(0).map(|x| x.id)
     }
 
     /// applies flips and rotation until side side == id
     fn set_transform(&mut self, side: usize, id: usize, side2: usize, id2: usize) {
         let mut adj = self.adjacency.to_vec();
         for i in 0..4 {
-            if ((id == 0 && adj[side].is_empty()) || (!adj[side].is_empty() && adj[side][0].id == id))
+            if ((id == 0 && adj[side].is_empty())
+                || (!adj[side].is_empty() && adj[side][0].id == id))
                 && ((id2 == 0 && adj[side2].is_empty())
                     || (!adj[side2].is_empty() && adj[side2][0].id == id2))
             {
@@ -53,7 +54,8 @@ impl Tile {
         adj.swap(0, 2);
         self.flip = true;
         for i in 0..4 {
-            if ((id == 0 && adj[side].is_empty()) || (!adj[side].is_empty() && adj[side][0].id == id))
+            if ((id == 0 && adj[side].is_empty())
+                || (!adj[side].is_empty() && adj[side][0].id == id))
                 && ((id2 == 0 && adj[side2].is_empty())
                     || (!adj[side2].is_empty() && adj[side2][0].id == id2))
             {
@@ -199,11 +201,7 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     let mut image = vec![vec![0usize; image_size]; image_size];
 
     // first cell
-    image[0][0] = adjacency_sums
-        .iter()
-        .find(|(_, v)| *v == 2)
-        .unwrap()
-        .0;
+    image[0][0] = adjacency_sums.iter().find(|(_, v)| *v == 2).unwrap().0;
     input[&image[0][0]].borrow_mut().set_transform(0, 0, 3, 0);
 
     // first row

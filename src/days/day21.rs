@@ -28,16 +28,17 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
     for line in input.iter() {
         for allergen in &line.allergens {
             if let Some(current) = ingredients.get(allergen) {
-                let int = line.ingredients.iter().copied().collect::<HashSet<_>>()
+                let int = line
+                    .ingredients
+                    .iter()
+                    .copied()
+                    .collect::<HashSet<_>>()
                     .intersection(current)
                     .copied()
                     .collect();
                 ingredients.insert(allergen, int);
             } else {
-                ingredients.insert(
-                    allergen,
-                    line.ingredients.iter().copied().collect(),
-                );
+                ingredients.insert(allergen, line.ingredients.iter().copied().collect());
             }
         }
     }
@@ -63,10 +64,7 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
 
     let mut mappings = BTreeMap::new();
     for _ in 0..ingredients.len() {
-        let (name, ones) = ingredients
-            .iter()
-            .find(|&(_, x)| x.len() == 1)
-            .unwrap();
+        let (name, ones) = ingredients.iter().find(|&(_, x)| x.len() == 1).unwrap();
         let value = *ones.iter().next().unwrap();
 
         mappings.insert(*name, value);
