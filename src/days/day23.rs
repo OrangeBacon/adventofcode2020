@@ -114,7 +114,7 @@ pub fn solve(timer: &mut Timer, input: &str) -> Result<AocResult> {
 
     cups.extend(10..=1_000_000);
     let part2 = game(&cups, 10_000_000);
-    let part2 = (part2.indicies[0]+1) * (part2.indicies[part2.indicies[0]]+1);
+    let part2 = (part2.indicies[0] + 1) * (part2.indicies[part2.indicies[0]] + 1);
 
     timer.lap("Part 2");
 
